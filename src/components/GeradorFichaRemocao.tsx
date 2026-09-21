@@ -240,6 +240,7 @@ export const GeradorFichaRemocao: React.FC<GeradorFichaRemocaoProps> = ({
 
   const [isPrinting, setIsPrinting] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [printFeedback, setPrintFeedback] = useState<string | null>(null);
 
   // Gerador Vetorial Nativo Direto jsPDF (2 Páginas A4 - Frente e Verso)
   const generateFichaFiles = (formData: FormularioRemocaoState) => {
@@ -616,17 +617,72 @@ export const GeradorFichaRemocao: React.FC<GeradorFichaRemocaoProps> = ({
     }
   };
 
-  // Impressão oficial: aciona diretamente a tela nativa de impressão do navegador (com pré-visualização A4 de 2 páginas)
-  const handlePrint = () => {
+  // Impressão oficial: GERA O ARQUIVO PDF (2 páginas completas), salva o arquivo para impressão e dispara a impressão
+  const handlePrint = async () => {
     setIsPrinting(true);
-    // 1. Garante que o documento formatado esteja ativo e renderizado no DOM
-    setActiveTab('visualizacao');
+    setPrintFeedback('Gerando arquivo para impressão...');
 
-    // 2. Aciona a janela nativa de impressão com pré-visualização (idêntica à captura de tela enviada)
-    setTimeout(() => {
-      setIsPrinting(false);
-      window.print();
-    }, 120);
+    try {
+      // 1. Gera o arquivo PDF oficial com 2 páginas fiéis ao modelo
+      const { pdf, filename, blobUrl } = generateFichaFiles(form);
+
+      // 2. Salva e baixa o arquivo gerado imediatamente para o dispositivo
+      pdf.save(filename);
+      setPrintFeedback(`Arquivo gerado com sucesso: ${filename}`);
+
+      // 3. Garante que a aba de visualização A4 esteja ativa
+      setActiveTab('visualizacao');
+
+      // 4. Cria iframe oculto com o arquivo PDF gerado para acionar o diálogo de impressão
+      try {
+        const oldIframe = document.getElementById('pdf-print-sandbox');
+        if (oldIframe) oldIframe.remove();
+
+        const printIframe = document.createElement('iframe');
+        printIframe.id = 'pdf-print-sandbox';
+        printIframe.style.position = 'fixed';
+        printIframe.style.right = '0';
+        printIframe.style.bottom = '0';
+        printIframe.style.width = '0';
+        printIframe.style.height = '0';
+        printIframe.style.border = '0';
+        printIframe.src = blobUrl;
+        document.body.appendChild(printIframe);
+
+        printIframe.onload = () => {
+          setTimeout(() => {
+            try {
+              printIframe.contentWindow?.focus();
+              printIframe.contentWindow?.print();
+            } catch (errIframe) {
+              console.warn('Impressão em iframe restrita pelo navegador:', errIframe);
+            }
+          }, 350);
+        };
+      } catch (e) {
+        console.warn('Falha no iframe de impressão:', e);
+      }
+
+      // 5. Fallback adicional de impressão nativa da janela
+      setTimeout(() => {
+        try {
+          window.print();
+        } catch (e) {
+          console.warn('window.print() indisponível:', e);
+        }
+      }, 500);
+
+    } catch (err) {
+      console.error('Falha ao gerar o arquivo de impressão:', err);
+      setPrintFeedback('Erro ao gerar arquivo. Tente novamente.');
+    } finally {
+      setTimeout(() => {
+        setIsPrinting(false);
+      }, 700);
+      setTimeout(() => {
+        setPrintFeedback(null);
+      }, 4500);
+    }
   };
 
   // Build a concise WhatsApp/Text summary
@@ -733,13 +789,21 @@ ${form.quadroClinicoJustificativa || 'Paciente estável, indicado transporte em 
               onClick={handlePrint}
               disabled={isPrinting || isDownloading}
               className="px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 disabled:bg-slate-100 shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
-              title="Abrir pré-visualização e imprimir"
+              title="Gerar arquivo PDF e imprimir"
             >
-              <Printer className={`w-3.5 h-3.5 ${isPrinting ? 'animate-spin' : ''}`} />
-              <span>{isPrinting ? 'Abrindo...' : 'Imprimir'}</span>
+              <Printer className={`w-3.5 h-3.5 ${isPrinting ? 'animate-spin text-[#1D787A]' : ''}`} />
+              <span>{isPrinting ? 'Gerando arquivo...' : 'Imprimir'}</span>
             </button>
           </div>
         </div>
+
+        {/* Feedback visual de geração de arquivo e impressão */}
+        {printFeedback && (
+          <div className="flex items-center gap-2 px-3.5 py-2 bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-bold rounded-xl shadow-2xs animate-fadeIn">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+            <span>{printFeedback}</span>
+          </div>
+        )}
 
         {/* Linha 2: Seletor de Modelo (Nível Superior) */}
         <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
@@ -1681,9 +1745,10 @@ ${form.quadroClinicoJustificativa || 'Paciente estável, indicado transporte em 
                 onClick={handlePrint}
                 disabled={isPrinting || isDownloading}
                 className="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 disabled:bg-slate-100 shadow-2xs flex items-center gap-1.5 transition-all cursor-pointer"
+                title="Gerar arquivo PDF e imprimir"
               >
-                <Printer className={`w-4 h-4 ${isPrinting ? 'animate-spin' : ''}`} />
-                <span>{isPrinting ? 'Abrindo...' : 'Imprimir'}</span>
+                <Printer className={`w-4 h-4 ${isPrinting ? 'animate-spin text-[#1D787A]' : ''}`} />
+                <span>{isPrinting ? 'Gerando arquivo...' : 'Imprimir'}</span>
               </button>
             </div>
           </div>
