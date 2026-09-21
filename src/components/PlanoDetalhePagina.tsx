@@ -120,43 +120,43 @@ export const PlanoDetalhePagina: React.FC<PlanoDetalhePaginaProps> = ({
       {/* ---------------------------------------------------- */}
       {/* TOPO: BARRA DE NAVEGAÇÃO, TÍTULO DO PLANO E AÇÕES     */}
       {/* ---------------------------------------------------- */}
-      <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="flex items-center gap-5">
+      <div className="bg-white border border-slate-200 rounded-[22px] p-5 sm:px-7 sm:py-5 shadow-xs flex flex-col xl:flex-row xl:items-center justify-between gap-5">
+        {/* Lado Esquerdo: Botão Voltar + Nome do Convênio + Separador + Categoria */}
+        <div className="flex items-center gap-4 sm:gap-6 flex-wrap sm:flex-nowrap">
           <button
             onClick={onVoltar}
-            className="w-12 h-12 rounded-2xl bg-[#EBF5F5] hover:bg-[#1D787A] text-[#1D787A] hover:text-white border border-[#A9D2D1] flex items-center justify-center text-center transition-all cursor-pointer shadow-2xs group flex-shrink-0"
+            className="w-12 h-12 rounded-xl sm:rounded-2xl bg-[#ECF7F6] hover:bg-[#d8eceb] text-[#167876] border border-[#CEE9E8] flex items-center justify-center text-center transition-all cursor-pointer shadow-2xs group flex-shrink-0"
             title="Voltar para a lista de convênios"
           >
-            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" />
+            <ArrowLeft className="w-5 h-5 text-[#167876] group-hover:-translate-x-0.5 transition-transform" />
           </button>
 
-          <div>
-            <div className="flex items-center gap-3">
-              <span className="text-xs font-bold uppercase tracking-widest text-[#1D787A]">
-                Remoções / Convênio
-              </span>
-              <span className="text-slate-300">•</span>
-              <span className="text-xs text-slate-500 font-medium capitalize">
-                Categoria: {plano.categoria.replace('_', ' ')}
-              </span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-1 flex items-center gap-3">
-              <span>{plano.nome}</span>
-              {isMaster && (
-                <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center gap-1.5">
-                  <Edit3 className="w-3.5 h-3.5 flex-shrink-0" /> 
-                  <span>Modo Master</span>
-                </span>
-              )}
+          <div className="flex flex-col justify-center">
+            <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#167876] leading-none block">
+              Remoções / Convênio
+            </span>
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight uppercase leading-none mt-1.5">
+              {plano.nome}
             </h1>
+          </div>
+
+          <div className="h-10 w-[1px] bg-slate-200 hidden sm:block mx-1"></div>
+
+          <div className="flex flex-col justify-center">
+            <span className="text-xs font-medium text-slate-500 leading-none">
+              Categoria:
+            </span>
+            <span className="mt-1.5 px-3.5 py-1 rounded-full bg-[#EFF2F6] text-slate-800 text-xs font-semibold capitalize inline-flex items-center justify-center leading-normal">
+              {plano.categoria.replace('_', ' ')}
+            </span>
           </div>
         </div>
 
-        {/* Botões de Ação na barra do topo */}
-        <div className="flex items-center gap-3 flex-wrap">
+        {/* Lado Direito: Botões de Ação exatamente como no modelo da imagem */}
+        <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap">
           <button
             onClick={() => onSimular(plano.id)}
-            className="px-5 py-3 rounded-xl bg-[#1D787A] hover:bg-[#165B5D] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-xs transition-all cursor-pointer"
+            className="px-5 py-3 rounded-xl bg-[#167876] hover:bg-[#126260] text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-2.5 shadow-xs transition-all cursor-pointer whitespace-nowrap"
           >
             <Sparkles className="w-4 h-4 flex-shrink-0" />
             <span>Assistente de Remoção</span>
@@ -164,17 +164,17 @@ export const PlanoDetalhePagina: React.FC<PlanoDetalhePaginaProps> = ({
 
           <button
             onClick={() => window.print()}
-            className="px-4 py-3 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-bold flex items-center justify-center gap-2 shadow-2xs transition-all cursor-pointer"
+            className="px-5 py-3 rounded-xl bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2.5 shadow-2xs transition-all cursor-pointer whitespace-nowrap"
           >
-            <Printer className="w-4 h-4 text-slate-500 flex-shrink-0" />
+            <Printer className="w-4 h-4 text-slate-700 flex-shrink-0" />
             <span>Imprimir Informações</span>
           </button>
 
           <button
             onClick={onVoltar}
-            className="px-4 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+            className="px-5 py-3 rounded-xl bg-[#F1F5F9] hover:bg-slate-200/80 border border-slate-200 text-slate-800 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2.5 shadow-2xs transition-all cursor-pointer whitespace-nowrap"
           >
-            <ArrowLeft className="w-4 h-4 flex-shrink-0" />
+            <ArrowLeft className="w-4 h-4 text-slate-700 flex-shrink-0" />
             <span>Voltar aos Planos</span>
           </button>
         </div>
