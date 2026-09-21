@@ -619,7 +619,7 @@ export const GeradorFichaRemocao: React.FC<GeradorFichaRemocaoProps> = ({
     }
   };
 
-  // Impressão oficial: Abre a tela de pré-visualização completa do documento A4 e permite imprimir diretamente
+  // Impressão oficial: Dispara a pré-visualização nativa e impressão direta em janela dedicada perfeita
   const handlePrint = () => {
     setIsPrinting(true);
     setPrintFeedback('Abrindo tela de impressão e pré-visualização...');
@@ -629,20 +629,52 @@ export const GeradorFichaRemocao: React.FC<GeradorFichaRemocaoProps> = ({
       const { blobUrl } = generateFichaFiles(form);
       setPreviewPdfBlobUrl(blobUrl);
 
-      // 2. Abre a modal de pré-visualização para o usuário ver o documento completo
-      setShowPrintModal(true);
+      // 2. Tenta abrir a impressão direta do PDF gerado (que tem dimensões vetoriais exatas A4 milimétricas)
+      let printedViaIframe = false;
+      try {
+        const oldIframe = document.getElementById('direct-pdf-print-frame');
+        if (oldIframe) oldIframe.remove();
 
-      // 3. Garante que a aba de visualização A4 também esteja pronta
+        const printFrame = document.createElement('iframe');
+        printFrame.id = 'direct-pdf-print-frame';
+        printFrame.style.position = 'fixed';
+        printFrame.style.right = '0';
+        printFrame.style.bottom = '0';
+        printFrame.style.width = '0';
+        printFrame.style.height = '0';
+        printFrame.style.border = '0';
+        printFrame.src = blobUrl;
+        document.body.appendChild(printFrame);
+
+        printFrame.onload = () => {
+          setTimeout(() => {
+            try {
+              printFrame.contentWindow?.focus();
+              printFrame.contentWindow?.print();
+              printedViaIframe = true;
+            } catch (errIframe) {
+              console.warn('Iframe print bloqueado pelo navegador:', errIframe);
+            }
+          }, 300);
+        };
+      } catch (err) {
+        console.warn('Falha no iframe de impressão:', err);
+      }
+
+      // 3. Abre também a modal de conferência visual completa para o usuário
+      setShowPrintModal(true);
       setActiveTab('visualizacao');
 
-      // 4. Aciona a janela nativa de impressão diretamente no navegador
+      // 4. Se o navegador não disparar o iframe em 500ms, aciona a janela padrão
       setTimeout(() => {
-        try {
-          window.print();
-        } catch (e) {
-          console.warn('Disparo direto de window.print() bloqueado:', e);
+        if (!printedViaIframe) {
+          try {
+            window.print();
+          } catch (e) {
+            console.warn('window.print() indisponível:', e);
+          }
         }
-      }, 350);
+      }, 550);
 
     } catch (err) {
       console.error('Falha ao gerar pré-visualização de impressão:', err);
@@ -650,7 +682,7 @@ export const GeradorFichaRemocao: React.FC<GeradorFichaRemocaoProps> = ({
     } finally {
       setTimeout(() => {
         setIsPrinting(false);
-      }, 500);
+      }, 600);
       setTimeout(() => {
         setPrintFeedback(null);
       }, 3500);
@@ -2080,10 +2112,20 @@ ${form.quadroClinicoJustificativa || 'Paciente estável, indicado transporte em 
                 <button
                   type="button"
                   onClick={() => {
+                    const printFrame = document.getElementById('modal-pdf-iframe') as HTMLIFrameElement;
+                    if (printFrame && printFrame.contentWindow) {
+                      try {
+                        printFrame.contentWindow.focus();
+                        printFrame.contentWindow.print();
+                        return;
+                      } catch (e) {
+                        console.warn('Iframe print error, falling back to window.print():', e);
+                      }
+                    }
                     window.print();
                   }}
                   className="px-4 py-1.5 rounded-xl text-xs font-bold bg-[#1D787A] hover:bg-[#165B5D] text-white shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
-                  title="Abrir tela de impressão do navegador"
+                  title="Abrir tela de impressão"
                 >
                   <Printer className="w-4 h-4" />
                   <span>Imprimir Agora</span>
@@ -2106,6 +2148,7 @@ ${form.quadroClinicoJustificativa || 'Paciente estável, indicado transporte em 
             <div className="flex-1 bg-slate-100 p-2 sm:p-4 overflow-hidden flex flex-col">
               {previewPdfBlobUrl ? (
                 <iframe
+                  id="modal-pdf-iframe"
                   src={`${previewPdfBlobUrl}#toolbar=1&navpanes=0&scrollbar=1`}
                   className="w-full h-full rounded-xl border border-slate-300 shadow-inner bg-white"
                   title="Pré-visualização do Documento para Impressão"
@@ -2133,6 +2176,16 @@ ${form.quadroClinicoJustificativa || 'Paciente estável, indicado transporte em 
                 <button
                   type="button"
                   onClick={() => {
+                    const printFrame = document.getElementById('modal-pdf-iframe') as HTMLIFrameElement;
+                    if (printFrame && printFrame.contentWindow) {
+                      try {
+                        printFrame.contentWindow.focus();
+                        printFrame.contentWindow.print();
+                        return;
+                      } catch (e) {
+                        console.warn('Iframe print error, falling back to window.print():', e);
+                      }
+                    }
                     window.print();
                   }}
                   className="px-4 py-1.5 rounded-xl bg-[#1D787A] hover:bg-[#165B5D] text-white font-bold shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
