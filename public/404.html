@@ -4,9 +4,9 @@
     <meta charset="utf-8">
     <title>CENTRAL DE REMOÇÕES</title>
     <script>
-      // Redireciona qualquer rota de volta para a raiz do app no GitHub Pages
-      var repo = '/REMOMEDICAL/';
-      var target = window.location.pathname.startsWith(repo) ? repo : '/';
+      // Redireciona qualquer rota não encontrada de volta para a raiz do repositório no GitHub Pages
+      var segments = window.location.pathname.split('/').filter(Boolean);
+      var target = segments.length > 0 ? '/' + segments[0] + '/' : '/';
       window.location.replace(window.location.origin + target);
     </script>
   </head>

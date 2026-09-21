@@ -6,7 +6,7 @@ import {
   LogoServir, 
   BrasaoTocantinsVector, 
   EmblemaServirVector,
-  getServirHeaderCanvasDataUrl 
+  getServirHeaderCanvasDataUrl
 } from './ServirLogos';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -240,12 +240,6 @@ export const GeradorFichaRemocao: React.FC<GeradorFichaRemocaoProps> = ({
 
   const [isPrinting, setIsPrinting] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
-  const [printModalInfo, setPrintModalInfo] = useState<{
-    isOpen: boolean;
-    filename: string;
-    blobUrl: string;
-    actionType: 'print' | 'download';
-  } | null>(null);
 
   // Gerador Vetorial Nativo Direto jsPDF (2 Páginas A4 - Frente e Verso)
   const generateFichaFiles = (formData: FormularioRemocaoState) => {
@@ -271,7 +265,7 @@ export const GeradorFichaRemocao: React.FC<GeradorFichaRemocaoProps> = ({
     let curY = my + 2;
 
     // Cabeçalho Página 1
-    const isServir = formData.modelo === 'servir' || formData.plano?.toUpperCase().includes('SERVIR');
+    const isServir = formData.modelo === 'servir';
     if (isServir) {
       const headerImgData = getServirHeaderCanvasDataUrl();
       if (headerImgData) {
@@ -298,12 +292,13 @@ export const GeradorFichaRemocao: React.FC<GeradorFichaRemocaoProps> = ({
       pdf.setLineWidth(0.4);
       pdf.line(mx, curY, mx + cw, curY);
     } else {
+      // FORMULÁRIO 2: SEM NENHUM TIPO DE LOGO, APENAS O TÍTULO
       pdf.setFillColor(245, 245, 245);
-      pdf.rect(mx, my, cw, 10, 'FD');
+      pdf.rect(mx, curY, cw, 10, 'FD');
       pdf.setFont('helvetica', 'bold');
-      pdf.setFontSize(10.5);
+      pdf.setFontSize(11);
       pdf.setTextColor(0, 0, 0);
-      pdf.text('FORMULÁRIO DE SOLICITAÇÃO DE REMOÇÃO', mx + cw / 2, curY + 5.5, { align: 'center' });
+      pdf.text('FORMULÁRIO DE SOLICITAÇÃO DE REMOÇÃO', mx + cw / 2, curY + 6.5, { align: 'center' });
 
       curY += 10;
       pdf.setLineWidth(0.4);
@@ -506,6 +501,18 @@ export const GeradorFichaRemocao: React.FC<GeradorFichaRemocaoProps> = ({
 
       pdf.setLineWidth(0.4);
       pdf.line(mx, curY2, mx + cw, curY2);
+    } else {
+      // FORMULÁRIO 2: SEM NENHUM TIPO DE LOGO, APENAS O TÍTULO
+      pdf.setFillColor(245, 245, 245);
+      pdf.rect(mx, curY2, cw, 8, 'FD');
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(9.5);
+      pdf.setTextColor(0, 0, 0);
+      pdf.text('FORMULÁRIO DE SOLICITAÇÃO DE REMOÇÃO', mx + cw / 2, curY2 + 5.2, { align: 'center' });
+
+      curY2 += 8;
+      pdf.setLineWidth(0.4);
+      pdf.line(mx, curY2, mx + cw, curY2);
     }
 
     // Título Quadro Clínico
@@ -600,14 +607,8 @@ export const GeradorFichaRemocao: React.FC<GeradorFichaRemocaoProps> = ({
   const handleDownloadPDF = async () => {
     setIsDownloading(true);
     try {
-      const { pdf, filename, blobUrl } = generateFichaFiles(form);
+      const { pdf, filename } = generateFichaFiles(form);
       pdf.save(filename);
-      setPrintModalInfo({
-        isOpen: true,
-        filename,
-        blobUrl,
-        actionType: 'download',
-      });
     } catch (err) {
       console.error('Falha ao gerar arquivo PDF para download:', err);
     } finally {
@@ -615,76 +616,17 @@ export const GeradorFichaRemocao: React.FC<GeradorFichaRemocaoProps> = ({
     }
   };
 
-  // Impressão oficial: gera o arquivo A4 de 2 páginas e abre a tela de pré-visualização (NÃO baixa automaticamente)
+  // Impressão oficial: aciona diretamente a tela nativa de impressão do navegador (com pré-visualização A4 de 2 páginas)
   const handlePrint = () => {
     setIsPrinting(true);
+    // 1. Garante que o documento formatado esteja ativo e renderizado no DOM
+    setActiveTab('visualizacao');
 
-    try {
-      // 1. Gera o arquivo vetorial A4 de 2 páginas
-      const { filename, blobUrl } = generateFichaFiles(form);
-
-      // 2. Prepara o iframe invisível para envio imediato à impressora quando o usuário confirmar
-      try {
-        let printIframe = document.getElementById('print-service-iframe') as HTMLIFrameElement | null;
-        if (!printIframe) {
-          printIframe = document.createElement('iframe');
-          printIframe.id = 'print-service-iframe';
-          printIframe.style.position = 'fixed';
-          printIframe.style.right = '0';
-          printIframe.style.bottom = '0';
-          printIframe.style.width = '0';
-          printIframe.style.height = '0';
-          printIframe.style.border = '0';
-          printIframe.style.visibility = 'hidden';
-          document.body.appendChild(printIframe);
-        }
-        printIframe.src = blobUrl;
-      } catch (e) {
-        console.warn('Iframe print setup:', e);
-      }
-
-      // 3. Abre a TELA DE PRÉ-VISUALIZAÇÃO DE IMPRESSÃO (Sem download automático!)
-      setPrintModalInfo({
-        isOpen: true,
-        filename,
-        blobUrl,
-        actionType: 'print',
-      });
-
-    } catch (err) {
-      console.error('Erro ao gerar pré-visualização para impressão:', err);
-      setActiveTab('visualizacao');
-      window.print();
-    } finally {
+    // 2. Aciona a janela nativa de impressão com pré-visualização (idêntica à captura de tela enviada)
+    setTimeout(() => {
       setIsPrinting(false);
-    }
-  };
-
-  // Função para executar a impressão a partir da tela de pré-visualização
-  const handleTriggerPrint = () => {
-    const iframe = document.getElementById('preview-pdf-embed-frame') as HTMLIFrameElement | null
-      || document.getElementById('print-service-iframe') as HTMLIFrameElement | null;
-
-    if (iframe && iframe.contentWindow) {
-      try {
-        iframe.contentWindow.focus();
-        iframe.contentWindow.print();
-        return;
-      } catch (e) {
-        console.warn('Tentando fallback de impressão pelo navegador:', e);
-      }
-    }
-    window.print();
-  };
-
-  // Função para baixar o arquivo a partir da tela de pré-visualização
-  const handleDownloadFromPreview = () => {
-    try {
-      const { pdf, filename } = generateFichaFiles(form);
-      pdf.save(filename);
-    } catch (e) {
-      console.error('Erro ao baixar PDF:', e);
-    }
+      window.print();
+    }, 120);
   };
 
   // Build a concise WhatsApp/Text summary
@@ -719,7 +661,7 @@ ${form.quadroClinicoJustificativa || 'Paciente estável, indicado transporte em 
     <div className="space-y-5">
       
       {/* PAINEL DE CONTROLE SUPERIOR */}
-      <div className={`bg-white ${embedded ? 'p-4 sm:p-5 rounded-2xl' : 'p-5 sm:p-6 rounded-2xl'} border border-slate-200 shadow-xs space-y-5`}>
+      <div className={`bg-white ${embedded ? 'p-4 sm:p-5 rounded-2xl' : 'p-5 sm:p-6 rounded-2xl'} border border-slate-200 shadow-xs space-y-5 print:hidden`}>
         
         {/* Linha 1: Título e Ações Principais */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
@@ -815,7 +757,11 @@ ${form.quadroClinicoJustificativa || 'Paciente estável, indicado transporte em 
 
           <button
             type="button"
-            onClick={() => setForm(prev => ({ ...prev, modelo: 'padrao' }))}
+            onClick={() => setForm(prev => ({ 
+              ...prev, 
+              modelo: 'padrao',
+              plano: prev.plano === 'SERVIR' ? '' : prev.plano
+            }))}
             className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 ${
               form.modelo === 'padrao'
                 ? 'bg-[#1D787A] text-white shadow-xs'
@@ -867,10 +813,10 @@ ${form.quadroClinicoJustificativa || 'Paciente estável, indicado transporte em 
 
       {/* TAB 1: FORMULÁRIO DE PREENCHIMENTO */}
       {activeTab === 'formulario' && (
-        <div className="space-y-5">
+        <div className="space-y-5 print:hidden">
           
-          {/* Banner de Identificação Visual do SERVIR */}
-          {(form.modelo === 'servir' || form.plano?.toUpperCase().includes('SERVIR')) && (
+          {/* Banner de Identificação Visual do Cabeçalho Oficial (Apenas no modelo SERVIR) */}
+          {form.modelo === 'servir' && (
             <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs">
               <CabecalhoOficialServir compact={false} />
             </div>
@@ -1751,32 +1697,31 @@ ${form.quadroClinicoJustificativa || 'Paciente estável, indicado transporte em 
             {/* PÁGINA 1 (FRENTE) */}
             <div 
               id="ficha-remocao-pagina-1" 
-              className="ficha-page-1 bg-white border border-black p-3 sm:p-4 space-y-2 mb-6 print:mb-0 shadow-sm print:shadow-none mx-auto"
+              className="ficha-page-1 bg-white border border-black p-3 sm:p-4 print:p-2 space-y-2 print:space-y-1 mb-6 print:mb-0 shadow-sm print:shadow-none mx-auto"
               style={{
                 pageBreakAfter: 'always',
                 breakAfter: 'page',
                 boxSizing: 'border-box',
                 width: '100%',
                 maxWidth: '210mm',
-                minHeight: '272mm',
               }}
             >
               
               {/* CABEÇALHO DO DOCUMENTO */}
-              {(form.modelo === 'servir' || form.plano?.toUpperCase().includes('SERVIR')) ? (
+              {form.modelo === 'servir' ? (
                 <div className="border-b-2 border-black pb-2 mb-2">
                   <CabecalhoOficialServir compact={false} />
                 </div>
               ) : (
-                <div className="border border-black py-2 mb-2 text-center bg-slate-50">
-                  <h1 className="text-sm sm:text-base font-black uppercase tracking-wider">
+                <div className="border border-black py-2.5 mb-2 text-center bg-slate-50">
+                  <h1 className="text-sm sm:text-base font-black uppercase tracking-wider text-black">
                     FORMULÁRIO DE SOLICITAÇÃO DE REMOÇÃO
                   </h1>
                 </div>
               )}
 
               {/* TABELA DE CAMPOS - PÁGINA 1 */}
-              <div className="border border-black divide-y divide-black text-[11px]">
+              <div className="border border-black divide-y divide-black text-[11px] print:text-[8.5px] print:leading-[1.18]">
                 
                 {/* Linha 1 */}
                 <div className="grid grid-cols-12 divide-x divide-black">
@@ -2004,26 +1949,25 @@ ${form.quadroClinicoJustificativa || 'Paciente estável, indicado transporte em 
             {/* PÁGINA 2: QUADRO CLÍNICO & ASSINATURAS */}
             <div 
               id="ficha-remocao-pagina-2" 
-              className="ficha-page-2 bg-white border border-black p-3 sm:p-4 space-y-3 shadow-sm print:shadow-none mx-auto flex flex-col justify-between"
+              className="ficha-page-2 bg-white border border-black p-3 sm:p-4 print:p-2 space-y-3 print:space-y-1.5 shadow-sm print:shadow-none mx-auto flex flex-col justify-between"
               style={{
                 pageBreakBefore: 'always',
                 breakBefore: 'page',
                 boxSizing: 'border-box',
                 width: '100%',
                 maxWidth: '210mm',
-                minHeight: '272mm',
               }}
             >
               
               <div className="space-y-3 flex-1 flex flex-col">
                 {/* CABEÇALHO PÁGINA 2 */}
-                {(form.modelo === 'servir' || form.plano?.toUpperCase().includes('SERVIR')) ? (
+                {form.modelo === 'servir' ? (
                   <div className="border-b-2 border-black pb-2 mb-2">
                     <CabecalhoOficialServir compact={true} />
                   </div>
                 ) : (
                   <div className="border border-black py-1.5 mb-2 text-center bg-slate-50">
-                    <span className="text-xs font-bold uppercase tracking-wider">
+                    <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-black">
                       FORMULÁRIO DE SOLICITAÇÃO DE REMOÇÃO
                     </span>
                   </div>
@@ -2072,148 +2016,6 @@ ${form.quadroClinicoJustificativa || 'Paciente estável, indicado transporte em 
 
           </div>
 
-        </div>
-      )}
-
-      {/* Modal de Pré-Visualização e Impressão Oficial */}
-      {printModalInfo?.isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-5xl h-[92vh] max-h-[96vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
-            
-            {/* Header da Tela de Pré-Visualização */}
-            <div className="bg-gradient-to-r from-teal-900 via-teal-800 to-slate-900 px-4 sm:px-6 py-3.5 flex items-center justify-between text-white flex-shrink-0">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-white/10 rounded-xl flex-shrink-0">
-                  <Printer className="w-5 h-5 text-teal-200" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="font-bold text-sm sm:text-base leading-tight">
-                      Pré-Visualização para Impressão
-                    </h3>
-                    <span className="text-[10px] font-extrabold uppercase tracking-wider bg-white/15 text-teal-100 px-2 py-0.5 rounded-md">
-                      2 Páginas A4 (Frente e Verso)
-                    </span>
-                  </div>
-                  <p className="text-xs text-teal-200/90 mt-0.5">
-                    {form.modelo === 'servir' ? 'Modelo Oficial: GOVERNO DO TOCANTINS / SERVIR' : 'Modelo: PADRÃO HOSPITALAR'}
-                  </p>
-                </div>
-              </div>
-
-              {/* Botões de Ação no Topo da Pré-Visualização */}
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={handleTriggerPrint}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 active:scale-98 shadow-md flex items-center gap-1.5 transition-all cursor-pointer"
-                  title="Abrir janela de impressão do navegador"
-                >
-                  <Printer className="w-4 h-4 text-white" />
-                  <span>Imprimir Agora</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleDownloadFromPreview}
-                  className="px-3 py-2 rounded-xl text-xs font-semibold text-white bg-white/10 hover:bg-white/20 border border-white/20 hidden sm:flex items-center gap-1.5 transition-all cursor-pointer"
-                  title="Baixar cópia em PDF"
-                >
-                  <Download className="w-3.5 h-3.5 text-white" />
-                  <span>Baixar PDF</span>
-                </button>
-
-                <a
-                  href={printModalInfo.blobUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="px-3 py-2 rounded-xl text-xs font-semibold text-white bg-white/10 hover:bg-white/20 border border-white/20 hidden md:flex items-center gap-1.5 transition-all cursor-pointer"
-                  title="Abrir em aba separada"
-                >
-                  <ExternalLink className="w-3.5 h-3.5 text-white" />
-                  <span>Nova Aba</span>
-                </a>
-
-                <button
-                  type="button"
-                  onClick={() => setPrintModalInfo(null)}
-                  className="text-teal-200 hover:text-white p-1.5 rounded-xl hover:bg-white/10 transition-colors cursor-pointer ml-1"
-                  title="Fechar pré-visualização"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
-
-            {/* Barra Informativa de Identificação do Paciente */}
-            <div className="bg-slate-100 border-b border-slate-200 px-4 sm:px-6 py-2 flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs text-slate-700 flex-shrink-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-bold text-slate-900">
-                  Paciente: {form.beneficiarioNome || 'Paciente não identificado'}
-                </span>
-                <span className="text-slate-400">•</span>
-                <span>Matrícula: {form.matricula || '---'}</span>
-                <span className="text-slate-400">•</span>
-                <span>Plano: {form.plano || 'SERVIR'}</span>
-              </div>
-              <div className="text-[11px] text-slate-500 flex items-center gap-1.5">
-                <span className="inline-block w-2 h-2 rounded-full bg-emerald-500" />
-                <span>Role para conferir Página 1 (Frente) e Página 2 (Verso)</span>
-              </div>
-            </div>
-
-            {/* Notificação no caso de ter clicado em Baixar PDF */}
-            {printModalInfo.actionType === 'download' && (
-              <div className="bg-emerald-50 border-b border-emerald-200 px-4 sm:px-6 py-2 flex items-center justify-between text-xs text-emerald-900 flex-shrink-0">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                  <span>
-                    O arquivo <strong>{printModalInfo.filename}</strong> foi baixado com sucesso no seu dispositivo.
-                  </span>
-                </div>
-                <span className="text-[11px] text-emerald-700 hidden sm:inline">
-                  Você também pode imprimir diretamente abaixo.
-                </span>
-              </div>
-            )}
-
-            {/* Área de Visualização do Documento PDF (Iframe Interativo) */}
-            <div className="flex-1 w-full bg-slate-200/80 relative overflow-hidden flex flex-col min-h-0">
-              <iframe
-                id="preview-pdf-embed-frame"
-                src={`${printModalInfo.blobUrl}#toolbar=1&navpanes=0&view=FitH`}
-                className="w-full h-full border-0 bg-white"
-                title="Pré-visualização da Ficha de Remoção Oficial"
-              />
-            </div>
-
-            {/* Rodapé da Pré-Visualização */}
-            <div className="bg-white border-t border-slate-200 px-4 sm:px-6 py-3 flex flex-col sm:flex-row items-center justify-between gap-3 flex-shrink-0">
-              <p className="text-xs text-slate-500 text-center sm:text-left">
-                Documento configurado em padrão A4 de 2 páginas. Pronto para impressão direta.
-              </p>
-
-              <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
-                <button
-                  type="button"
-                  onClick={() => setPrintModalInfo(null)}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors cursor-pointer"
-                >
-                  Voltar ao Formulário
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleTriggerPrint}
-                  className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-teal-800 hover:bg-teal-900 shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-98"
-                >
-                  <Printer className="w-4 h-4 text-white" />
-                  <span>Imprimir Documento</span>
-                </button>
-              </div>
-            </div>
-
-          </div>
         </div>
       )}
 

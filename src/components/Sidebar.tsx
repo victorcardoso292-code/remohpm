@@ -70,7 +70,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   ];
 
   return (
-    <aside className="w-full lg:w-68 bg-white border-r border-slate-200 p-4 lg:min-h-[calc(100vh-64px)] flex flex-col justify-between">
+    <aside className="w-full lg:w-68 bg-white border-r border-slate-200 p-4 lg:min-h-[calc(100vh-64px)] flex flex-col justify-between print:hidden">
       <div className="space-y-5">
         
         {/* Main Navigation */}

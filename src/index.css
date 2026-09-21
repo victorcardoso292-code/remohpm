@@ -57,26 +57,56 @@
 @media print {
   @page {
     size: A4 portrait;
-    margin: 8mm;
+    margin: 6mm 8mm;
   }
   
+  /* Ocultar elementos de navegação e controles na impressão */
+  header,
+  nav,
+  aside,
+  footer,
+  button,
+  .print\:hidden {
+    display: none !important;
+  }
+
   html, body {
     background: #ffffff !important;
     color: #000000 !important;
     margin: 0 !important;
     padding: 0 !important;
-    font-size: 11px !important;
+    width: 100% !important;
+    font-size: 10px !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
 
-  /* Force clean page breaks */
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  #ficha-remocao-document-root {
+    padding: 0 !important;
+    margin: 0 auto !important;
+    width: 100% !important;
+    max-width: 198mm !important;
+  }
+
+  /* Force clean page breaks - Exactly 2 pages A4 */
   .ficha-page-1 {
     page-break-after: always !important;
     break-after: page !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
-    margin-bottom: 0 !important;
+    margin: 0 auto !important;
+    padding: 2mm 3mm !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 198mm !important;
+    height: auto !important;
   }
 
   .ficha-page-2 {
@@ -84,7 +114,36 @@
     break-before: page !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
-    margin-top: 0 !important;
+    margin: 0 auto !important;
+    padding: 2mm 3mm !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 198mm !important;
+    height: auto !important;
+  }
+
+  /* Compact formatting for Page 1 table cells during print */
+  .ficha-page-1 .p-1\.5,
+  .ficha-page-1 .divide-y > div,
+  .ficha-page-1 .grid > div {
+    padding-top: 1.5px !important;
+    padding-bottom: 1.5px !important;
+    padding-left: 3px !important;
+    padding-right: 3px !important;
+    line-height: 1.2 !important;
+  }
+
+  /* Page 2 clinical text and signatures */
+  .ficha-page-2 .p-4 {
+    padding: 3mm 4mm !important;
+    min-height: 170mm !important;
+    max-height: 185mm !important;
+  }
+  .ficha-page-2 .p-2 {
+    padding: 1.5mm 3mm !important;
+  }
+  .ficha-page-2 .p-2\.5 {
+    padding: 1.5mm 3mm !important;
   }
 
   .print-page-break {
@@ -92,3 +151,4 @@
     break-after: page !important;
   }
 }
+
