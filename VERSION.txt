@@ -1,0 +1,8 @@
+# Central de Remoções Hospitalares — Medical • Kora Saúde (HPM)
+Versão: 2.6
+Atualização: Autoria João Victor Cardoso Costa e Autenticação Operacional HPM.
+
+## Criação e Autoria:
+- **Criação**: João Victor Cardoso Costa
+- **Instituição**: Hospital Palmas Medical (HPM) — Medical • Kora Saúde
+- **Acesso**: Login HPM / Senha HPM@2026

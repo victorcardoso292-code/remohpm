@@ -95,6 +95,12 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Actions & Status */}
         <div className="flex items-center gap-3 min-w-max">
+          {/* Badge pílula de autoria no Header */}
+          <div className="hidden xl:inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#EBF5F5] border border-[#A9D2D1] text-[11px] text-[#1D787A]">
+            <span>Criação:</span>
+            <strong className="font-extrabold text-[#0D6264]">João Victor Cardoso Costa</strong>
+          </div>
+
           {/* Status badge */}
           <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#EBF5F5] border border-[#C8E4E3] text-xs font-bold text-[#1D787A]">
             <span className="w-2 h-2 rounded-full bg-[#1D787A] animate-pulse" />
