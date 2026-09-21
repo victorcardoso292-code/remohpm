@@ -26,7 +26,9 @@ import {
   ShieldCheck,
   Building2,
   Clock,
-  BookOpen
+  BookOpen,
+  Ambulance,
+  ChevronRight
 } from 'lucide-react';
 
 interface PlanoDetalhePaginaProps {
@@ -120,51 +122,48 @@ export const PlanoDetalhePagina: React.FC<PlanoDetalhePaginaProps> = ({
       {/* ---------------------------------------------------- */}
       {/* TOPO: BARRA DE NAVEGAÇÃO, TÍTULO DO PLANO E AÇÕES     */}
       {/* ---------------------------------------------------- */}
-      <div className="bg-white border border-slate-200 rounded-[22px] p-5 sm:px-7 sm:py-5 shadow-xs flex flex-col xl:flex-row xl:items-center justify-between gap-5">
-        {/* Lado Esquerdo: Botão Voltar + Nome do Convênio + Separador + Categoria */}
-        <div className="flex items-center gap-4 sm:gap-6 flex-wrap sm:flex-nowrap">
+      <div className="bg-white border border-slate-200 rounded-[22px] p-4 sm:px-6 sm:py-4 shadow-2xs flex flex-col xl:flex-row xl:items-center justify-between gap-4 sm:gap-5">
+        {/* Lado Esquerdo: Botão Voltar + Nome do Convênio */}
+        <div className="flex items-center gap-4 sm:gap-5 flex-shrink-0">
           <button
             onClick={onVoltar}
-            className="w-12 h-12 rounded-xl sm:rounded-2xl bg-[#ECF7F6] hover:bg-[#d8eceb] text-[#167876] border border-[#CEE9E8] flex items-center justify-center text-center transition-all cursor-pointer shadow-2xs group flex-shrink-0"
+            className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#ECF7F6] hover:bg-[#d8eceb] text-[#167876] border border-[#CEE9E8] flex items-center justify-center text-center transition-all cursor-pointer shadow-2xs group flex-shrink-0"
             title="Voltar para a lista de convênios"
           >
             <ArrowLeft className="w-5 h-5 text-[#167876] group-hover:-translate-x-0.5 transition-transform" />
           </button>
 
-          <div className="flex flex-col justify-center">
-            <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#167876] leading-none block">
-              Remoções / Convênio
+          <div className="flex flex-col justify-center flex-shrink-0">
+            <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#167876] whitespace-nowrap leading-none block select-none">
+              REMOÇÕES / CONVÊNIO
             </span>
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight uppercase leading-none mt-1.5">
-              {plano.nome}
-            </h1>
-          </div>
-
-          <div className="h-10 w-[1px] bg-slate-200 hidden sm:block mx-1"></div>
-
-          <div className="flex flex-col justify-center">
-            <span className="text-xs font-medium text-slate-500 leading-none">
-              Categoria:
-            </span>
-            <span className="mt-1.5 px-3.5 py-1 rounded-full bg-[#EFF2F6] text-slate-800 text-xs font-semibold capitalize inline-flex items-center justify-center leading-normal">
-              {plano.categoria.replace('_', ' ')}
-            </span>
+            <div className="flex items-center gap-2 mt-1.5">
+              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight uppercase leading-none whitespace-nowrap">
+                {plano.nome}
+              </h1>
+              {isMaster && (
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-bold inline-flex items-center gap-1 whitespace-nowrap">
+                  <Edit3 className="w-3 h-3 flex-shrink-0" />
+                  <span>Master</span>
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
         {/* Lado Direito: Botões de Ação exatamente como no modelo da imagem */}
-        <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap">
+        <div className="flex items-center gap-2.5 sm:gap-3 flex-shrink-0 flex-wrap sm:flex-nowrap">
           <button
             onClick={() => onSimular(plano.id)}
-            className="px-5 py-3 rounded-xl bg-[#167876] hover:bg-[#126260] text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-2.5 shadow-xs transition-all cursor-pointer whitespace-nowrap"
+            className="h-11 px-4 sm:px-5 rounded-xl bg-[#167876] hover:bg-[#126260] text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-2.5 shadow-xs transition-all cursor-pointer whitespace-nowrap flex-shrink-0"
           >
-            <Sparkles className="w-4 h-4 flex-shrink-0" />
+            <Sparkles className="w-4 h-4 flex-shrink-0 text-white" />
             <span>Assistente de Remoção</span>
           </button>
 
           <button
             onClick={() => window.print()}
-            className="px-5 py-3 rounded-xl bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2.5 shadow-2xs transition-all cursor-pointer whitespace-nowrap"
+            className="h-11 px-4 sm:px-5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2.5 shadow-2xs transition-all cursor-pointer whitespace-nowrap flex-shrink-0"
           >
             <Printer className="w-4 h-4 text-slate-700 flex-shrink-0" />
             <span>Imprimir Informações</span>
@@ -172,7 +171,7 @@ export const PlanoDetalhePagina: React.FC<PlanoDetalhePaginaProps> = ({
 
           <button
             onClick={onVoltar}
-            className="px-5 py-3 rounded-xl bg-[#F1F5F9] hover:bg-slate-200/80 border border-slate-200 text-slate-800 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2.5 shadow-2xs transition-all cursor-pointer whitespace-nowrap"
+            className="h-11 px-4 sm:px-5 rounded-xl bg-[#F1F5F9] hover:bg-slate-200/80 border border-slate-200 text-slate-800 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2.5 shadow-2xs transition-all cursor-pointer whitespace-nowrap flex-shrink-0"
           >
             <ArrowLeft className="w-4 h-4 text-slate-700 flex-shrink-0" />
             <span>Voltar aos Planos</span>
@@ -384,25 +383,30 @@ export const PlanoDetalhePagina: React.FC<PlanoDetalhePaginaProps> = ({
         <div className="space-y-10">
 
           {/* 1. SEÇÃO: STATUS & DIRETRIZ OPERACIONAL */}
-          <section className="bg-white border border-slate-200 rounded-3xl p-8 sm:p-10 shadow-xs space-y-6">
-            <div className="flex items-center gap-3.5 pb-4 border-b border-slate-100">
-              <div className="w-11 h-11 rounded-2xl bg-[#EBF5F5] text-[#1D787A] flex items-center justify-center flex-shrink-0 shadow-2xs">
-                <ShieldCheck className="w-5 h-5" />
+          <section className="bg-white border border-slate-200 rounded-[28px] p-6 sm:p-8 shadow-xs space-y-6">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-[#ECF7F6] text-[#167876] border border-[#CEE9E8]/80 flex items-center justify-center flex-shrink-0 shadow-2xs">
+                <ShieldCheck className="w-7 h-7" />
               </div>
               <div>
-                <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
                   Status & Diretriz Operacional
                 </h2>
-                <p className="text-xs text-slate-500 mt-0.5 font-medium">
+                <p className="text-sm sm:text-base text-slate-500 font-normal mt-0.5">
                   Regras gerais e regulação para o transporte de pacientes
                 </p>
               </div>
             </div>
 
-            <div className="bg-[#EBF5F5]/70 border border-[#A9D2D1] rounded-2xl p-6 text-[#1D787A] space-y-3">
-              <span className="text-[11px] font-extrabold uppercase tracking-wider block text-[#0D6264]">
-                Diretriz de Regulação
-              </span>
+            <div className="bg-[#F2FAF9] border border-[#CEE9E8] border-l-[5px] border-l-[#167876] rounded-2xl p-6 sm:p-7 space-y-3.5">
+              <div className="flex items-center gap-2.5">
+                <div className="w-7 h-7 rounded-lg bg-[#E0F2F1] text-[#167876] flex items-center justify-center flex-shrink-0">
+                  <FileText className="w-4 h-4" />
+                </div>
+                <span className="text-xs font-bold uppercase tracking-wider text-[#167876]">
+                  DIRETRIZ DE REGULAÇÃO
+                </span>
+              </div>
               <p className="text-base sm:text-lg font-bold leading-relaxed text-slate-900">
                 {isCareMedActive && (
                   plano.id === 'geap'
@@ -418,32 +422,43 @@ export const PlanoDetalhePagina: React.FC<PlanoDetalhePaginaProps> = ({
                 )}
                 {!isCareMedActive && !isLissCareActive && plano.statusTexto}
               </p>
-              <div className="pt-2 flex flex-wrap gap-4 text-xs font-semibold text-slate-700">
-                <span>Empresa Referência: <strong>{isCareMedActive ? 'CARE MED SOLUTIONS' : isLissCareActive ? 'LISS CARE' : plano.empresaCredenciadaPrincipal}</strong></span>
-                <span>•</span>
-                <span>Prazo de Resposta: <strong>{plano.prazoResposta}</strong></span>
+              <div className="pt-2 flex flex-wrap items-center gap-4 text-xs sm:text-sm text-slate-600">
+                <div className="flex items-center gap-2">
+                  <Building2 className="w-4 h-4 text-slate-500 flex-shrink-0" />
+                  <span>Empresa Referência: <strong className="font-bold text-slate-900">{isCareMedActive ? 'CARE MED SOLUTIONS' : isLissCareActive ? 'LISS CARE' : plano.empresaCredenciadaPrincipal}</strong></span>
+                </div>
+                <div className="h-4 w-px bg-slate-300 hidden sm:block"></div>
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-slate-500 flex-shrink-0" />
+                  <span>Prazo de Resposta: <strong className="font-bold text-slate-900">{plano.prazoResposta}</strong></span>
+                </div>
               </div>
             </div>
 
             {/* Suporte de Ambulâncias */}
-            <div className="pt-2">
-              <span className="text-xs font-extrabold text-slate-500 uppercase tracking-wider block mb-3">
-                Tipos de Ambulância Cobertos / Homologados
+            <div className="pt-1">
+              <span className="text-xs font-bold text-slate-600 uppercase tracking-wider block mb-2.5">
+                TIPOS DE AMBULÂNCIA COBERTOS / HOMOLOGADOS
               </span>
-              <div className="flex flex-wrap gap-2.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3">
                 {plano.tipoAmbulanciaSuportada.map((tipo, idx) => (
-                  <span
+                  <div
                     key={idx}
-                    className="px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-700 flex items-center gap-2"
+                    className="bg-white border border-slate-200/90 hover:border-slate-300 rounded-xl px-3.5 py-2.5 sm:px-4 sm:py-3 flex items-center justify-between gap-2.5 shadow-2xs transition-all"
                   >
-                    <Truck className="w-4 h-4 text-[#1D787A]" />
-                    <span>
-                      {tipo === 'basica' && 'Ambulância Simples / Básica (Tipo B)'}
-                      {tipo === 'uti_adulto' && 'UTI Móvel Adulto (Tipo D)'}
-                      {tipo === 'uti_neo_ped' && 'UTI Neonatal / Pediátrica'}
-                      {tipo === 'aerea' && 'Aeromédico / UTI Aérea'}
-                    </span>
-                  </span>
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[#ECF7F6] text-[#167876] border border-[#CEE9E8]/70 flex items-center justify-center flex-shrink-0">
+                        <Ambulance className="w-4 h-4 text-[#167876]" />
+                      </div>
+                      <span className="text-xs sm:text-[13px] font-bold text-slate-900 leading-tight">
+                        {tipo === 'basica' && 'Ambulância Simples / Básica (Tipo B)'}
+                        {tipo === 'uti_adulto' && 'UTI Móvel Adulto (Tipo D)'}
+                        {tipo === 'uti_neo_ped' && 'UTI Neonatal / Pediátrica'}
+                        {tipo === 'aerea' && 'Aeromédico / UTI Aérea'}
+                      </span>
+                    </div>
+                    <ChevronRight className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+                  </div>
                 ))}
               </div>
             </div>
