@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+@layer utilities {
+  /* Medical KoraSaúde Color Palette */
+  .bg-medical-magenta {
+    background-color: #9E1B4F;
+  }
+  .bg-medical-magenta-hover:hover {
+    background-color: #82133F;
+  }
+  .bg-medical-magenta-light {
+    background-color: #FDF2F5;
+  }
+  .border-medical-magenta {
+    border-color: #9E1B4F;
+  }
+  .border-medical-magenta-light {
+    border-color: #F8D0DC;
+  }
+  .text-medical-magenta {
+    color: #9E1B4F;
+  }
+  .focus-ring-medical-magenta:focus {
+    --tw-ring-color: #9E1B4F;
+  }
+
+  .bg-medical-teal {
+    background-color: #1D787A;
+  }
+  .bg-medical-teal-dark {
+    background-color: #165B5D;
+  }
+  .bg-medical-teal-light {
+    background-color: #EBF5F5;
+  }
+  .border-medical-teal {
+    border-color: #1D787A;
+  }
+  .text-medical-teal {
+    color: #1D787A;
+  }
+  .text-medical-teal-dark {
+    color: #165B5D;
+  }
+
+  .bg-medical-mint {
+    background-color: #C8E4E3;
+  }
+  .bg-medical-mint-light {
+    background-color: #E2F2F1;
+  }
+  .border-medical-mint {
+    border-color: #B5DAD9;
+  }
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 8mm;
+  }
+  
+  html, body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 11px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide everything except printable element if marked */
+  body.printing-ficha *:not(#ficha-remocao-document-root):not(#ficha-remocao-document-root *) {
+    display: none !important;
+  }
+
+  .print-page-break {
+    page-break-after: always !important;
+    break-after: page !important;
+  }
+}
