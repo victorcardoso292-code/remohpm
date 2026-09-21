@@ -46,7 +46,7 @@ function MainApp() {
   const [selectedPlano, setSelectedPlano] = useState<PlanoRemocao | null>(null);
   const [isMasterModalOpen, setIsMasterModalOpen] = useState<boolean>(false);
   const [simulationPlanoId, setSimulationPlanoId] = useState<string>('servir');
-  const [fichaPlanoId, setFichaPlanoId] = useState<string>('bradesco');
+  const [fichaPlanoId, setFichaPlanoId] = useState<string>('servir');
 
   const handleLogout = () => {
     try {

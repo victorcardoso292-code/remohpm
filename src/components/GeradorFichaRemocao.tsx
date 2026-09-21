@@ -1,6 +1,13 @@
 import React, { useState, useMemo } from 'react';
 import { PlanoRemocao } from '../types/remocao';
-import { CabecalhoOficialServir, LogoGovernoTocantins, LogoServir, BrasaoTocantinsVector, EmblemaServirVector } from './ServirLogos';
+import { 
+  CabecalhoOficialServir, 
+  LogoGovernoTocantins, 
+  LogoServir, 
+  BrasaoTocantinsVector, 
+  EmblemaServirVector,
+  getServirHeaderCanvasDataUrl 
+} from './ServirLogos';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { 
@@ -19,7 +26,10 @@ import {
   Clock,
   ShieldCheck,
   AlertCircle,
-  Loader2
+  Loader2,
+  ExternalLink,
+  X,
+  CheckCircle2
 } from 'lucide-react';
 
 export interface FormularioRemocaoState {
@@ -230,92 +240,391 @@ export const GeradorFichaRemocao: React.FC<GeradorFichaRemocaoProps> = ({
 
   const [isPrinting, setIsPrinting] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [printModalInfo, setPrintModalInfo] = useState<{
+    isOpen: boolean;
+    filename: string;
+    blobUrl: string;
+    actionType: 'print' | 'download';
+  } | null>(null);
 
-  // Download direto do arquivo PDF com alta fidelidade (A4 2 Páginas)
-  const handleDownloadPDF = async () => {
-    setIsDownloading(true);
-    // Garantir que a aba de visualização esteja ativa para renderização no DOM
-    setActiveTab('visualizacao');
+  // Gerador Vetorial Nativo Direto jsPDF (2 Páginas A4 - Frente e Verso)
+  const generateFichaFiles = (formData: FormularioRemocaoState) => {
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4',
+      compress: true,
+    });
 
-    setTimeout(async () => {
-      try {
-        const page1Elem = document.getElementById('ficha-remocao-pagina-1');
-        const page2Elem = document.getElementById('ficha-remocao-pagina-2');
+    const pw = 210;
+    const mx = 8;
+    const my = 8;
+    const cw = pw - mx * 2; // 194mm
 
-        if (!page1Elem || !page2Elem) {
-          window.print();
-          setIsDownloading(false);
-          return;
+    // ==========================================
+    // PÁGINA 1 (FRENTE)
+    // ==========================================
+    pdf.setDrawColor(0, 0, 0);
+    pdf.setLineWidth(0.4);
+    pdf.rect(mx, my, cw, 276);
+
+    let curY = my + 2;
+
+    // Cabeçalho Página 1
+    const isServir = formData.modelo === 'servir' || formData.plano?.toUpperCase().includes('SERVIR');
+    if (isServir) {
+      const headerImgData = getServirHeaderCanvasDataUrl();
+      if (headerImgData) {
+        pdf.addImage(headerImgData, 'PNG', mx, curY - 1, cw, 14);
+        curY += 13.5;
+      } else {
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(7.5);
+        pdf.setTextColor(0, 0, 0);
+        pdf.text('Secretaria da administração', mx + 3, curY + 4);
+        pdf.setFontSize(10);
+        pdf.text('GOVERNO DO TOCANTINS', mx + 3, curY + 9);
+
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(15);
+        pdf.setTextColor(0, 71, 133);
+        pdf.text('Servir', pw - mx - 3, curY + 5, { align: 'right' });
+        pdf.setFontSize(6.5);
+        pdf.setTextColor(0, 0, 0);
+        pdf.text('SAÚDE PARA QUEM CUIDA DO TOCANTINS', pw - mx - 3, curY + 9, { align: 'right' });
+        curY += 12;
+      }
+
+      pdf.setLineWidth(0.4);
+      pdf.line(mx, curY, mx + cw, curY);
+    } else {
+      pdf.setFillColor(245, 245, 245);
+      pdf.rect(mx, my, cw, 10, 'FD');
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(10.5);
+      pdf.setTextColor(0, 0, 0);
+      pdf.text('FORMULÁRIO DE SOLICITAÇÃO DE REMOÇÃO', mx + cw / 2, curY + 5.5, { align: 'center' });
+
+      curY += 10;
+      pdf.setLineWidth(0.4);
+      pdf.line(mx, curY, mx + cw, curY);
+    }
+
+    // Auxiliar de desenho de linhas da tabela
+    const drawRow = (
+      height: number,
+      cols: Array<{ widthRatio: number; label: string; value: string; isBold?: boolean }>
+    ) => {
+      const rowY = curY;
+      let colX = mx;
+
+      cols.forEach((col, idx) => {
+        const colW = cw * col.widthRatio;
+        if (idx > 0) {
+          pdf.line(colX, rowY, colX, rowY + height);
         }
 
-        const canvasOptions = {
-          scale: 2, // 2x para nitidez e clareza de impressão
-          useCORS: true,
-          logging: false,
-          backgroundColor: '#ffffff',
-        };
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(7);
+        pdf.setTextColor(0, 0, 0);
+        const labelW = pdf.getTextWidth(col.label);
+        pdf.text(col.label, colX + 1.5, rowY + 3.8);
 
-        const canvas1 = await html2canvas(page1Elem, canvasOptions);
-        const canvas2 = await html2canvas(page2Elem, canvasOptions);
+        if (col.value) {
+          pdf.setFont('helvetica', col.isBold ? 'bold' : 'normal');
+          if (col.value.includes('\n')) {
+            const lines = col.value.split('\n');
+            pdf.text(lines[0], colX + 1.5 + labelW + 1, rowY + 3.8);
+            if (lines[1]) {
+              pdf.text(lines[1].trim(), colX + 1.5 + labelW + 1, rowY + 7.5);
+            }
+          } else {
+            pdf.text(col.value, colX + 1.5 + labelW + 1, rowY + 3.8);
+          }
+        }
 
-        const pdf = new jsPDF({
-          orientation: 'portrait',
-          unit: 'mm',
-          format: 'a4',
-          compress: true,
-        });
+        colX += colW;
+      });
 
-        const pdfWidth = 210;
-        const pdfHeight = 297;
-        const margin = 8;
-        const contentWidth = pdfWidth - margin * 2;
+      curY += height;
+      pdf.line(mx, curY, mx + cw, curY);
+    };
 
-        // Página 1
-        const imgData1 = canvas1.toDataURL('image/jpeg', 0.95);
-        const imgHeight1 = (canvas1.height * contentWidth) / canvas1.width;
-        const finalHeight1 = Math.min(imgHeight1, pdfHeight - margin * 2);
-        pdf.addImage(imgData1, 'JPEG', margin, margin, contentWidth, finalHeight1);
+    // Linha 1
+    drawRow(6.5, [
+      { widthRatio: 0.5, label: 'Nome do beneficiário: ', value: formData.beneficiarioNome },
+      { widthRatio: 0.25, label: 'Matrícula: ', value: formData.matricula },
+      { widthRatio: 0.25, label: 'Plano: ', value: formData.plano || 'SERVIR', isBold: true },
+    ]);
 
-        // Página 2
-        pdf.addPage();
-        const imgData2 = canvas2.toDataURL('image/jpeg', 0.95);
-        const imgHeight2 = (canvas2.height * contentWidth) / canvas2.width;
-        const finalHeight2 = Math.min(imgHeight2, pdfHeight - margin * 2);
-        pdf.addImage(imgData2, 'JPEG', margin, margin, contentWidth, finalHeight2);
+    // Linha 2
+    drawRow(6.5, [
+      { widthRatio: 0.33, label: 'Idade: ', value: formData.idade },
+      { widthRatio: 0.33, label: 'Peso: ', value: formData.peso },
+      { widthRatio: 0.34, label: 'Sexo: ', value: `M ( ${formData.sexo === 'M' ? 'X' : ' '} )   F ( ${formData.sexo === 'F' ? 'X' : ' '} )` },
+    ]);
 
-        // Nome do Arquivo
-        const pacienteSanitizado = form.beneficiarioNome
-          ? form.beneficiarioNome.trim().replace(/[^a-zA-Z0-9À-ÿ_-]/g, '_')
-          : 'Paciente';
-        const modelTag = form.modelo === 'servir' ? 'SERVIR_TO' : 'Padrao_Hospitalar';
-        const filename = `Ficha_Remocao_${modelTag}_${pacienteSanitizado}.pdf`;
+    // Linha 3
+    drawRow(6.5, [{ widthRatio: 1, label: 'Local de origem: ', value: formData.localOrigem }]);
 
-        // Executar download direto no navegador
-        pdf.save(filename);
-      } catch (err) {
-        console.error('Erro ao gerar PDF para download:', err);
-        window.print();
-      } finally {
-        setIsDownloading(false);
+    // Linha 4
+    drawRow(6.5, [{ widthRatio: 1, label: 'Endereço de origem: ', value: formData.enderecoOrigem }]);
+
+    // Linha 5
+    drawRow(6.5, [
+      { widthRatio: 0.65, label: 'Nome do contato na origem: ', value: formData.nomeContatoOrigem },
+      { widthRatio: 0.35, label: 'Telefone: ', value: formData.telefoneOrigem },
+    ]);
+
+    // Linha 6
+    drawRow(9.5, [{
+      widthRatio: 1,
+      label: 'Unidade de atendimento onde está o paciente: ',
+      value: `( ${formData.unidadeAtendimento === 'ps_pa' ? 'X' : ' '} ) PS/PA     ( ${formData.unidadeAtendimento === 'uti' ? 'X' : ' '} ) UTI     ( ${formData.unidadeAtendimento === 'internado' ? 'X' : ' '} ) INTERNADO / Número da acomodação: ${formData.numeroAcomodacao || '________'}`
+    }]);
+
+    // Linha 7
+    drawRow(6.5, [
+      { widthRatio: 0.5, label: 'Profissional solicitante: ', value: formData.profissionalSolicitante },
+      { widthRatio: 0.25, label: 'CRM: ', value: formData.crmSolicitante },
+      { widthRatio: 0.25, label: 'Telefone: ', value: formData.telefoneSolicitante },
+    ]);
+
+    // Linha 8
+    drawRow(10, [{
+      widthRatio: 1,
+      label: 'Tipo da remoção: ',
+      value: `( ${formData.tipoRemocao === 'hospital_hospital' ? 'X' : ' '} ) Hospital p/ hospital   ( ${formData.tipoRemocao === 'hospital_sadt' ? 'X' : ' '} ) Hospital p/ serviço de SADT   ( ${formData.tipoRemocao === 'hospital_residencia' ? 'X' : ' '} ) Hospital p/ residência\n                      ( ${formData.tipoTrajeto === 'somente_ida' ? 'X' : ' '} ) Somente ida       ( ${formData.tipoTrajeto === 'ida_e_volta' ? 'X' : ' '} ) Ida e volta RESIDÊNCIA/CLÍNICA`
+    }]);
+
+    // Linha 9
+    drawRow(6.5, [{ widthRatio: 1, label: 'Local para onde o beneficiário será removido: ', value: formData.localDestino }]);
+
+    // Linha 10
+    drawRow(6.5, [
+      { widthRatio: 0.65, label: 'Profissional responsável pela admissão do paciente: ', value: formData.profissionalAdmissao },
+      { widthRatio: 0.35, label: 'Telefone: ', value: formData.telefoneAdmissao },
+    ]);
+
+    // Linha 11
+    drawRow(6.5, [{ widthRatio: 1, label: 'Data da remoção: ', value: formData.dataRemocao }]);
+
+    // Linha 12
+    drawRow(6.5, [
+      { widthRatio: 0.5, label: 'Horário de chegada na origem: ', value: formData.horarioChegadaOrigem },
+      { widthRatio: 0.5, label: 'Horário de chegada no destino: ', value: formData.horarioChegadaDestino },
+    ]);
+
+    // Linha 13
+    drawRow(6.5, [{ widthRatio: 1, label: 'Está com home care em internação domiciliar ', value: `( ${formData.homeCareInternacao === false ? 'X' : ' '} ) não     ( ${formData.homeCareInternacao === true ? 'X' : ' '} ) sim` }]);
+
+    // Linha 14
+    drawRow(6.5, [{ widthRatio: 1, label: 'Esta com home care em atendimento domiciliar pontual ', value: `( ${formData.homeCareAtendimentoPontual === false ? 'X' : ' '} ) não     ( ${formData.homeCareAtendimentoPontual === true ? 'X' : ' '} ) sim` }]);
+
+    // Linha 15
+    drawRow(6.5, [{ widthRatio: 1, label: 'Informar qual atendimento: ', value: formData.homeCareQualAtendimento || '____________________________________________________________________' }]);
+
+    // Linha 16
+    drawRow(6.5, [{ widthRatio: 1, label: 'Possui acompanhamento diário com enfermeiro ', value: `( ${formData.acompanhamentoEnfermeiro === '6' ? 'X' : ' '} ) 6 horas   ( ${formData.acompanhamentoEnfermeiro === '12' ? 'X' : ' '} ) 12 horas   ( ${formData.acompanhamentoEnfermeiro === '24' ? 'X' : ' '} ) 24 horas` }]);
+
+    // Linha 17
+    drawRow(6.5, [{ widthRatio: 1, label: 'Qual a empresa de Home care? ', value: formData.empresaHomeCare || '____________________________________________________________________' }]);
+
+    // Linha 18
+    drawRow(6.5, [{ widthRatio: 1, label: 'Condições clinicas:     ', value: `( ${formData.condClinicaClinico ? 'X' : ' '} ) Clínico     ( ${formData.condClinicaCirurgico ? 'X' : ' '} ) Cirúrgico     ( ${formData.condClinicaConsciente ? 'X' : ' '} ) Está consciente` }]);
+
+    // Linha 19
+    drawRow(6.5, [{ widthRatio: 1, label: 'Sofreu acidente de   ', value: `( ${formData.acidenteAutomovel ? 'X' : ' '} ) Automóvel     ( ${formData.acidenteQueda ? 'X' : ' '} ) Queda     ( ${formData.acidenteConvulsao ? 'X' : ' '} ) convulsão` }]);
+
+    // Linha 20
+    drawRow(6.5, [{ widthRatio: 1, label: 'Acidente com   ', value: `( ${formData.acidenteArmaFogo ? 'X' : ' '} ) arma de fogo     ( ${formData.acidenteArmaBranca ? 'X' : ' '} ) branca     Local do ferimento: ${formData.localFerimento || '____________________'}` }]);
+
+    // Linha 21
+    drawRow(6.5, [{ widthRatio: 1, label: 'Está utilizando oxigênio? ', value: `( ${formData.utilizandoOxigenio === true ? 'X' : ' '} ) Sim   ( ${formData.utilizandoOxigenio === false ? 'X' : ' '} ) Não` }]);
+
+    // Linha 22
+    drawRow(6.5, [{ widthRatio: 1, label: 'Possui concentrador portátio no momento da alta? ', value: `( ${formData.possuiConcentradorAlta === true ? 'X' : ' '} ) Sim   ( ${formData.possuiConcentradorAlta === false ? 'X' : ' '} ) Não` }]);
+
+    // Linha 23
+    drawRow(6.5, [{ widthRatio: 1, label: 'Consegue se locomover com ajuda de terceiros? ', value: `( ${formData.locomoverAjudaTerceiros === true ? 'X' : ' '} ) Sim   ( ${formData.locomoverAjudaTerceiros === false ? 'X' : ' '} ) Não       Está acamado? ( ${formData.estaAcamado === true ? 'X' : ' '} ) Sim   ( ${formData.estaAcamado === false ? 'X' : ' '} ) Não` }]);
+
+    // Linha 24
+    drawRow(6.5, [{ widthRatio: 1, label: 'Consegue se locomover com cadeira de rodas? ', value: `( ${formData.locomoverCadeiraRodas === true ? 'X' : ' '} ) Sim   ( ${formData.locomoverCadeiraRodas === false ? 'X' : ' '} ) Não` }]);
+
+    // Linha 25
+    drawRow(6.5, [{ widthRatio: 1, label: 'Consegue andar com bengala? ', value: `( ${formData.andarBengala === true ? 'X' : ' '} ) sim   ( ${formData.andarBengala === false ? 'X' : ' '} ) não       Consegue andar com andador? ( ${formData.andarAndador === true ? 'X' : ' '} ) sim   ( ${formData.andarAndador === false ? 'X' : ' '} ) não` }]);
+
+    // Linha 26
+    drawRow(6.5, [{ widthRatio: 1, label: 'Qual a limitação/dificuldade física do participante? ', value: formData.limitacaoFisica || 'Nenhuma' }]);
+
+    // Linha 27
+    drawRow(6.5, [{ widthRatio: 1, label: 'participante possui "controle de tronco/toráx/braços? ', value: `( ${formData.controleTronco === true ? 'X' : ' '} ) sim   ( ${formData.controleTronco === false ? 'X' : ' '} ) não` }]);
+
+    // Linha 28
+    drawRow(6.5, [{ widthRatio: 1, label: 'Possui indicação formal para ser transportado apenas em posição horizontal/deitada? ', value: `( ${formData.indicacaoPosicaoDeitada === true ? 'X' : ' '} ) sim   ( ${formData.indicacaoPosicaoDeitada === false ? 'X' : ' '} ) não` }]);
+
+    // Linha 29
+    drawRow(6.5, [{ widthRatio: 1, label: 'Justifique: ', value: formData.justificativaPosicaoDeitada || '_________________________________________________________________________________________________' }]);
+
+    // Linha 30
+    drawRow(6.5, [{ widthRatio: 1, label: 'Ambulância para remoção:     ', value: `( ${formData.ambulanciaTipo === 'simples' ? 'X' : ' '} ) Ambulância simples     ( ${formData.ambulanciaTipo === 'simples_oxigenio' ? 'X' : ' '} ) Ambulância simples com oxigênio     ( ${formData.ambulanciaTipo === 'uti_completa' ? 'X' : ' '} ) UTI completa` }]);
+
+    // ==========================================
+    // PÁGINA 2 (VERSO)
+    // ==========================================
+    pdf.addPage('a4', 'portrait');
+
+    pdf.setDrawColor(0, 0, 0);
+    pdf.setLineWidth(0.4);
+    pdf.rect(mx, my, cw, 276);
+
+    let curY2 = my + 2;
+
+    if (isServir) {
+      const headerImgData = getServirHeaderCanvasDataUrl();
+      if (headerImgData) {
+        pdf.addImage(headerImgData, 'PNG', mx, curY2 - 1, cw, 12);
+        curY2 += 11.5;
+      } else {
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(7);
+        pdf.setTextColor(0, 0, 0);
+        pdf.text('Secretaria da administração', mx + 3, curY2 + 3.5);
+        pdf.setFontSize(8.5);
+        pdf.text('GOVERNO DO TOCANTINS', mx + 3, curY2 + 7.5);
+
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(12);
+        pdf.setTextColor(0, 71, 133);
+        pdf.text('Servir', pw - mx - 3, curY2 + 4.5, { align: 'right' });
+        pdf.setFontSize(5.5);
+        pdf.setTextColor(0, 0, 0);
+        pdf.text('SAÚDE PARA QUEM CUIDA DO TOCANTINS', pw - mx - 3, curY2 + 7.5, { align: 'right' });
+
+        curY2 += 10;
       }
-    }, 300);
+
+      pdf.setLineWidth(0.4);
+      pdf.line(mx, curY2, mx + cw, curY2);
+    }
+
+    // Título Quadro Clínico
+    pdf.setFillColor(245, 245, 245);
+    pdf.rect(mx, curY2, cw, 8, 'FD');
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(8);
+    pdf.setTextColor(0, 0, 0);
+    pdf.text('QUADRO CLÍNICO DO PACIENTE - JUSTIFICATIVA PARA A SOLICITAÇÃO DA REMOÇÃO', mx + cw / 2, curY2 + 5, { align: 'center' });
+
+    curY2 += 8;
+
+    const footerH = 34;
+    const textBoxH = (my + 276) - curY2 - footerH;
+
+    pdf.rect(mx, curY2, cw, textBoxH);
+
+    // Texto Clínico
+    if (formData.quadroClinicoJustificativa) {
+      pdf.setFont('courier', 'normal');
+      pdf.setFontSize(7.5);
+      pdf.setTextColor(0, 0, 0);
+      const splitText = pdf.splitTextToSize(formData.quadroClinicoJustificativa, cw - 6);
+      pdf.text(splitText, mx + 3, curY2 + 5);
+    } else {
+      pdf.setFont('helvetica', 'italic');
+      pdf.setFontSize(7.5);
+      pdf.setTextColor(130, 130, 130);
+      pdf.text('(Espaço reservado para descrição detalhada da evolução clínica, diagnóstico, condições hemodinâmicas e', mx + 3, curY2 + 6);
+      pdf.text('justificativa técnica da necessidade de transporte em ambulância)', mx + 3, curY2 + 10);
+    }
+
+    curY2 += textBoxH;
+
+    // Rodapé de Assinaturas
+    const drawFooterRow = (h: number, cols: Array<{ widthRatio: number; label: string; value: string }>) => {
+      const rowY = curY2;
+      let colX = mx;
+
+      cols.forEach((col, idx) => {
+        const colW = cw * col.widthRatio;
+        if (idx > 0) {
+          pdf.line(colX, rowY, colX, rowY + h);
+        }
+
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(7.5);
+        pdf.setTextColor(0, 0, 0);
+        const labelW = pdf.getTextWidth(col.label);
+        pdf.text(col.label, colX + 2, rowY + 4.5);
+
+        if (col.value) {
+          pdf.setFont('helvetica', 'normal');
+          pdf.text(col.value, colX + 2 + labelW + 1, rowY + 4.5);
+        }
+
+        colX += colW;
+      });
+
+      curY2 += h;
+      pdf.line(mx, curY2, mx + cw, curY2);
+    };
+
+    drawFooterRow(7.5, [{ widthRatio: 1, label: 'Data: ', value: formData.dataAssinatura }]);
+
+    drawFooterRow(8.5, [
+      { widthRatio: 0.65, label: 'Assinatura do médico solicitante: ', value: formData.medicoAssinatura },
+      { widthRatio: 0.35, label: 'CRM: ', value: formData.crmAssinatura },
+    ]);
+
+    drawFooterRow(8.5, [{ widthRatio: 1, label: 'ASSINATURA DO ACOMPANHANTE: ', value: formData.acompanhanteAssinatura }]);
+
+    pdf.setFillColor(245, 245, 245);
+    pdf.rect(mx, curY2, cw, 9.5, 'FD');
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(7.5);
+    pdf.setTextColor(0, 0, 0);
+    pdf.text('ATENÇÃO: A REMOÇÃO SERÁ REALIZADA SOMENTE COM A PRESENÇA DO ACOMPANHANTE NO LOCAL', mx + cw / 2, curY2 + 6, { align: 'center' });
+
+    const pacienteSanitizado = formData.beneficiarioNome
+      ? formData.beneficiarioNome.trim().replace(/[^a-zA-Z0-9À-ÿ_-]/g, '_')
+      : 'Paciente';
+    const modelTag = formData.modelo === 'servir' ? 'SERVIR_TO' : 'Padrao_Hospitalar';
+    const filename = `Ficha_Remocao_${modelTag}_${pacienteSanitizado}.pdf`;
+    const blob = pdf.output('blob');
+    const blobUrl = URL.createObjectURL(blob);
+
+    return { pdf, filename, blob, blobUrl };
   };
 
+  // Download do arquivo PDF com 2 Páginas fiéis ao modelo
+  const handleDownloadPDF = async () => {
+    setIsDownloading(true);
+    try {
+      const { pdf, filename, blobUrl } = generateFichaFiles(form);
+      pdf.save(filename);
+      setPrintModalInfo({
+        isOpen: true,
+        filename,
+        blobUrl,
+        actionType: 'download',
+      });
+    } catch (err) {
+      console.error('Falha ao gerar arquivo PDF para download:', err);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  // Impressão oficial: gera o arquivo A4 de 2 páginas e abre a tela de pré-visualização (NÃO baixa automaticamente)
   const handlePrint = () => {
-    // Switch to visual formatted view so the user can also preview the document
-    setActiveTab('visualizacao');
     setIsPrinting(true);
 
-    setTimeout(() => {
-      try {
-        const docElem = document.getElementById('ficha-remocao-document-root');
-        if (!docElem) {
-          window.print();
-          setIsPrinting(false);
-          return;
-        }
+    try {
+      // 1. Gera o arquivo vetorial A4 de 2 páginas
+      const { filename, blobUrl } = generateFichaFiles(form);
 
-        // Create or reuse hidden printing iframe
+      // 2. Prepara o iframe invisível para envio imediato à impressora quando o usuário confirmar
+      try {
         let printIframe = document.getElementById('print-service-iframe') as HTMLIFrameElement | null;
         if (!printIframe) {
           printIframe = document.createElement('iframe');
@@ -329,86 +638,53 @@ export const GeradorFichaRemocao: React.FC<GeradorFichaRemocaoProps> = ({
           printIframe.style.visibility = 'hidden';
           document.body.appendChild(printIframe);
         }
-
-        const iframeDoc = printIframe.contentWindow?.document || printIframe.contentDocument;
-        if (!iframeDoc) {
-          window.print();
-          setIsPrinting(false);
-          return;
-        }
-
-        // Collect stylesheets
-        const styleElements = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
-          .map(el => el.outerHTML)
-          .join('\n');
-
-        const docTitle = form.modelo === 'servir' 
-          ? `Ficha_Remocao_SERVIR_${form.beneficiarioNome ? form.beneficiarioNome.replace(/\s+/g, '_') : 'Paciente'}`
-          : `Ficha_Remocao_Padrao_${form.beneficiarioNome ? form.beneficiarioNome.replace(/\s+/g, '_') : 'Paciente'}`;
-
-        iframeDoc.open();
-        iframeDoc.write(`
-          <!DOCTYPE html>
-          <html lang="pt-BR">
-            <head>
-              <meta charset="utf-8" />
-              <title>${docTitle}</title>
-              <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-              ${styleElements}
-              <style>
-                @page {
-                  size: A4 portrait;
-                  margin: 8mm;
-                }
-                * {
-                  box-sizing: border-box;
-                  -webkit-print-color-adjust: exact !important;
-                  print-color-adjust: exact !important;
-                }
-                body {
-                  margin: 0;
-                  padding: 0;
-                  background-color: #ffffff !important;
-                  color: #000000 !important;
-                  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-                }
-                .page-break {
-                  page-break-after: always !important;
-                  break-after: page !important;
-                }
-                #ficha-remocao-document-root {
-                  width: 100% !important;
-                  max-width: 100% !important;
-                  margin: 0 !important;
-                  padding: 0 !important;
-                  border: none !important;
-                  box-shadow: none !important;
-                }
-              </style>
-            </head>
-            <body>
-              ${docElem.outerHTML}
-            </body>
-          </html>
-        `);
-        iframeDoc.close();
-
-        setTimeout(() => {
-          if (printIframe?.contentWindow) {
-            printIframe.contentWindow.focus();
-            printIframe.contentWindow.print();
-          } else {
-            window.print();
-          }
-          setIsPrinting(false);
-        }, 500);
-
+        printIframe.src = blobUrl;
       } catch (e) {
-        console.error('Falha ao imprimir via iframe:', e);
-        window.print();
-        setIsPrinting(false);
+        console.warn('Iframe print setup:', e);
       }
-    }, 200);
+
+      // 3. Abre a TELA DE PRÉ-VISUALIZAÇÃO DE IMPRESSÃO (Sem download automático!)
+      setPrintModalInfo({
+        isOpen: true,
+        filename,
+        blobUrl,
+        actionType: 'print',
+      });
+
+    } catch (err) {
+      console.error('Erro ao gerar pré-visualização para impressão:', err);
+      setActiveTab('visualizacao');
+      window.print();
+    } finally {
+      setIsPrinting(false);
+    }
+  };
+
+  // Função para executar a impressão a partir da tela de pré-visualização
+  const handleTriggerPrint = () => {
+    const iframe = document.getElementById('preview-pdf-embed-frame') as HTMLIFrameElement | null
+      || document.getElementById('print-service-iframe') as HTMLIFrameElement | null;
+
+    if (iframe && iframe.contentWindow) {
+      try {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+        return;
+      } catch (e) {
+        console.warn('Tentando fallback de impressão pelo navegador:', e);
+      }
+    }
+    window.print();
+  };
+
+  // Função para baixar o arquivo a partir da tela de pré-visualização
+  const handleDownloadFromPreview = () => {
+    try {
+      const { pdf, filename } = generateFichaFiles(form);
+      pdf.save(filename);
+    } catch (e) {
+      console.error('Erro ao baixar PDF:', e);
+    }
   };
 
   // Build a concise WhatsApp/Text summary
@@ -594,7 +870,7 @@ ${form.quadroClinicoJustificativa || 'Paciente estável, indicado transporte em 
         <div className="space-y-5">
           
           {/* Banner de Identificação Visual do SERVIR */}
-          {form.modelo === 'servir' && (
+          {(form.modelo === 'servir' || form.plano?.toUpperCase().includes('SERVIR')) && (
             <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs">
               <CabecalhoOficialServir compact={false} />
             </div>
@@ -1469,23 +1745,31 @@ ${form.quadroClinicoJustificativa || 'Paciente estável, indicado transporte em 
           {/* DOCUMENT CONTAINER (PÁGINAS 1 E 2) */}
           <div 
             id="ficha-remocao-document-root" 
-            className="bg-white p-6 sm:p-8 rounded-2xl border-2 border-black shadow-md text-black font-sans text-xs max-w-4xl mx-auto space-y-0 print:border-none print:p-0 print:m-0 print:shadow-none"
+            className="p-2 sm:p-4 text-black font-sans text-xs max-w-4xl mx-auto space-y-0 print:p-0 print:m-0"
           >
             
-            {/* PÁGINA 1 */}
+            {/* PÁGINA 1 (FRENTE) */}
             <div 
               id="ficha-remocao-pagina-1" 
-              className="bg-white border border-black p-4 space-y-2 mb-8 print:mb-0 print:page-break-after-always"
+              className="ficha-page-1 bg-white border border-black p-3 sm:p-4 space-y-2 mb-6 print:mb-0 shadow-sm print:shadow-none mx-auto"
+              style={{
+                pageBreakAfter: 'always',
+                breakAfter: 'page',
+                boxSizing: 'border-box',
+                width: '100%',
+                maxWidth: '210mm',
+                minHeight: '272mm',
+              }}
             >
               
               {/* CABEÇALHO DO DOCUMENTO */}
-              {form.modelo === 'servir' ? (
-                <div className="border-b-2 border-black pb-2.5 mb-3">
+              {(form.modelo === 'servir' || form.plano?.toUpperCase().includes('SERVIR')) ? (
+                <div className="border-b-2 border-black pb-2 mb-2">
                   <CabecalhoOficialServir compact={false} />
                 </div>
               ) : (
-                <div className="border-b border-black pb-3 mb-3 text-center">
-                  <h1 className="text-base sm:text-lg font-black uppercase tracking-wider">
+                <div className="border border-black py-2 mb-2 text-center bg-slate-50">
+                  <h1 className="text-sm sm:text-base font-black uppercase tracking-wider">
                     FORMULÁRIO DE SOLICITAÇÃO DE REMOÇÃO
                   </h1>
                 </div>
@@ -1708,35 +1992,60 @@ ${form.quadroClinicoJustificativa || 'Paciente estável, indicado transporte em 
               </div>
             </div>
 
+            {/* DIVISOR VISUAL DE PÁGINAS A4 (APENAS NA TELA - OCULTO EM IMPRESSÃO/PDF) */}
+            <div className="print:hidden my-6 flex items-center justify-center gap-3">
+              <div className="h-px bg-slate-300 flex-1 max-w-[140px]" />
+              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider bg-slate-100 px-3.5 py-1 rounded-full border border-slate-200">
+                Fim da Página 1 (Frente) • Início da Página 2 (Verso)
+              </span>
+              <div className="h-px bg-slate-300 flex-1 max-w-[140px]" />
+            </div>
+
             {/* PÁGINA 2: QUADRO CLÍNICO & ASSINATURAS */}
             <div 
               id="ficha-remocao-pagina-2" 
-              className="bg-white border border-black p-4 space-y-4 pt-6"
+              className="ficha-page-2 bg-white border border-black p-3 sm:p-4 space-y-3 shadow-sm print:shadow-none mx-auto flex flex-col justify-between"
+              style={{
+                pageBreakBefore: 'always',
+                breakBefore: 'page',
+                boxSizing: 'border-box',
+                width: '100%',
+                maxWidth: '210mm',
+                minHeight: '272mm',
+              }}
             >
               
-              {/* CABEÇALHO PÁGINA 2 */}
-              {form.modelo === 'servir' ? (
-                <div className="border-b-2 border-black pb-2.5 mb-3">
-                  <CabecalhoOficialServir compact={true} />
-                </div>
-              ) : null}
-
-              {/* TÍTULO QUADRO CLÍNICO */}
-              <div className="border border-black font-bold text-center py-1.5 bg-slate-50 text-[12px] uppercase">
-                Quadro clínico do paciente - Justificativa para a solicitação da remoção
-              </div>
-
-              {/* ÁREA DE TEXTO / JUSTIFICATIVA CLÍNICA */}
-              <div className="border border-black p-4 min-h-[380px] font-mono text-[11px] leading-relaxed whitespace-pre-wrap">
-                {form.quadroClinicoJustificativa || (
-                  <div className="text-slate-400 italic">
-                    (Espaço reservado para descrição detalhada da evolução clínica, diagnóstico, condições hemodinâmicas e justificativa técnica da necessidade de transporte em ambulância)
+              <div className="space-y-3 flex-1 flex flex-col">
+                {/* CABEÇALHO PÁGINA 2 */}
+                {(form.modelo === 'servir' || form.plano?.toUpperCase().includes('SERVIR')) ? (
+                  <div className="border-b-2 border-black pb-2 mb-2">
+                    <CabecalhoOficialServir compact={true} />
+                  </div>
+                ) : (
+                  <div className="border border-black py-1.5 mb-2 text-center bg-slate-50">
+                    <span className="text-xs font-bold uppercase tracking-wider">
+                      FORMULÁRIO DE SOLICITAÇÃO DE REMOÇÃO
+                    </span>
                   </div>
                 )}
+
+                {/* TÍTULO QUADRO CLÍNICO */}
+                <div className="border border-black font-bold text-center py-1.5 bg-slate-50 text-[11px] uppercase tracking-wide">
+                  QUADRO CLÍNICO DO PACIENTE - JUSTIFICATIVA PARA A SOLICITAÇÃO DA REMOÇÃO
+                </div>
+
+                {/* ÁREA DE TEXTO / JUSTIFICATIVA CLÍNICA */}
+                <div className="border border-black p-4 min-h-[460px] sm:min-h-[500px] flex-1 font-mono text-[11px] leading-relaxed whitespace-pre-wrap bg-white">
+                  {form.quadroClinicoJustificativa || (
+                    <div className="text-slate-400 italic">
+                      (Espaço reservado para descrição detalhada da evolução clínica, diagnóstico, condições hemodinâmicas e justificativa técnica da necessidade de transporte em ambulância)
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* RODAPÉ E ASSINATURAS */}
-              <div className="border border-black divide-y divide-black text-[11px]">
+              <div className="border border-black divide-y divide-black text-[11px] mt-3">
                 <div className="p-2">
                   <span className="font-bold">Data:</span> {form.dataAssinatura}
                 </div>
@@ -1763,6 +2072,148 @@ ${form.quadroClinicoJustificativa || 'Paciente estável, indicado transporte em 
 
           </div>
 
+        </div>
+      )}
+
+      {/* Modal de Pré-Visualização e Impressão Oficial */}
+      {printModalInfo?.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-5xl h-[92vh] max-h-[96vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+            
+            {/* Header da Tela de Pré-Visualização */}
+            <div className="bg-gradient-to-r from-teal-900 via-teal-800 to-slate-900 px-4 sm:px-6 py-3.5 flex items-center justify-between text-white flex-shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-white/10 rounded-xl flex-shrink-0">
+                  <Printer className="w-5 h-5 text-teal-200" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="font-bold text-sm sm:text-base leading-tight">
+                      Pré-Visualização para Impressão
+                    </h3>
+                    <span className="text-[10px] font-extrabold uppercase tracking-wider bg-white/15 text-teal-100 px-2 py-0.5 rounded-md">
+                      2 Páginas A4 (Frente e Verso)
+                    </span>
+                  </div>
+                  <p className="text-xs text-teal-200/90 mt-0.5">
+                    {form.modelo === 'servir' ? 'Modelo Oficial: GOVERNO DO TOCANTINS / SERVIR' : 'Modelo: PADRÃO HOSPITALAR'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Botões de Ação no Topo da Pré-Visualização */}
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleTriggerPrint}
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 active:scale-98 shadow-md flex items-center gap-1.5 transition-all cursor-pointer"
+                  title="Abrir janela de impressão do navegador"
+                >
+                  <Printer className="w-4 h-4 text-white" />
+                  <span>Imprimir Agora</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleDownloadFromPreview}
+                  className="px-3 py-2 rounded-xl text-xs font-semibold text-white bg-white/10 hover:bg-white/20 border border-white/20 hidden sm:flex items-center gap-1.5 transition-all cursor-pointer"
+                  title="Baixar cópia em PDF"
+                >
+                  <Download className="w-3.5 h-3.5 text-white" />
+                  <span>Baixar PDF</span>
+                </button>
+
+                <a
+                  href={printModalInfo.blobUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3 py-2 rounded-xl text-xs font-semibold text-white bg-white/10 hover:bg-white/20 border border-white/20 hidden md:flex items-center gap-1.5 transition-all cursor-pointer"
+                  title="Abrir em aba separada"
+                >
+                  <ExternalLink className="w-3.5 h-3.5 text-white" />
+                  <span>Nova Aba</span>
+                </a>
+
+                <button
+                  type="button"
+                  onClick={() => setPrintModalInfo(null)}
+                  className="text-teal-200 hover:text-white p-1.5 rounded-xl hover:bg-white/10 transition-colors cursor-pointer ml-1"
+                  title="Fechar pré-visualização"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Barra Informativa de Identificação do Paciente */}
+            <div className="bg-slate-100 border-b border-slate-200 px-4 sm:px-6 py-2 flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs text-slate-700 flex-shrink-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-bold text-slate-900">
+                  Paciente: {form.beneficiarioNome || 'Paciente não identificado'}
+                </span>
+                <span className="text-slate-400">•</span>
+                <span>Matrícula: {form.matricula || '---'}</span>
+                <span className="text-slate-400">•</span>
+                <span>Plano: {form.plano || 'SERVIR'}</span>
+              </div>
+              <div className="text-[11px] text-slate-500 flex items-center gap-1.5">
+                <span className="inline-block w-2 h-2 rounded-full bg-emerald-500" />
+                <span>Role para conferir Página 1 (Frente) e Página 2 (Verso)</span>
+              </div>
+            </div>
+
+            {/* Notificação no caso de ter clicado em Baixar PDF */}
+            {printModalInfo.actionType === 'download' && (
+              <div className="bg-emerald-50 border-b border-emerald-200 px-4 sm:px-6 py-2 flex items-center justify-between text-xs text-emerald-900 flex-shrink-0">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                  <span>
+                    O arquivo <strong>{printModalInfo.filename}</strong> foi baixado com sucesso no seu dispositivo.
+                  </span>
+                </div>
+                <span className="text-[11px] text-emerald-700 hidden sm:inline">
+                  Você também pode imprimir diretamente abaixo.
+                </span>
+              </div>
+            )}
+
+            {/* Área de Visualização do Documento PDF (Iframe Interativo) */}
+            <div className="flex-1 w-full bg-slate-200/80 relative overflow-hidden flex flex-col min-h-0">
+              <iframe
+                id="preview-pdf-embed-frame"
+                src={`${printModalInfo.blobUrl}#toolbar=1&navpanes=0&view=FitH`}
+                className="w-full h-full border-0 bg-white"
+                title="Pré-visualização da Ficha de Remoção Oficial"
+              />
+            </div>
+
+            {/* Rodapé da Pré-Visualização */}
+            <div className="bg-white border-t border-slate-200 px-4 sm:px-6 py-3 flex flex-col sm:flex-row items-center justify-between gap-3 flex-shrink-0">
+              <p className="text-xs text-slate-500 text-center sm:text-left">
+                Documento configurado em padrão A4 de 2 páginas. Pronto para impressão direta.
+              </p>
+
+              <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
+                <button
+                  type="button"
+                  onClick={() => setPrintModalInfo(null)}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors cursor-pointer"
+                >
+                  Voltar ao Formulário
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleTriggerPrint}
+                  className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-teal-800 hover:bg-teal-900 shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-98"
+                >
+                  <Printer className="w-4 h-4 text-white" />
+                  <span>Imprimir Documento</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
         </div>
       )}
 

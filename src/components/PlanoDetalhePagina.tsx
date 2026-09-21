@@ -258,6 +258,20 @@ export const PlanoDetalhePagina: React.FC<PlanoDetalhePaginaProps> = ({
             </button>
           )}
 
+          {plano.id === 'servir' && (
+            <button
+              onClick={() => setActiveSubTab('ficha')}
+              className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all cursor-pointer ${
+                activeSubTab === 'ficha'
+                  ? 'bg-[#1D787A] text-white shadow-xs'
+                  : 'bg-teal-50 hover:bg-teal-100 text-[#1D787A] border border-teal-200'
+              }`}
+            >
+              <FileText className="w-4 h-4" />
+              <span>Gerar Ficha Oficial SERVIR (TO)</span>
+            </button>
+          )}
+
           {plano.id === 'bradesco' && (
             <button
               onClick={() => setActiveSubTab('ficha')}
@@ -289,9 +303,9 @@ export const PlanoDetalhePagina: React.FC<PlanoDetalhePaginaProps> = ({
       )}
 
       {/* ---------------------------------------------------- */}
-      {/* ABA: GERADOR DE FICHA DE TRANSPORTE BRADESCO         */}
+      {/* ABA: GERADOR DE FICHA DE TRANSPORTE                  */}
       {/* ---------------------------------------------------- */}
-      {activeSubTab === 'ficha' && plano.id === 'bradesco' && (
+      {activeSubTab === 'ficha' && (plano.id === 'bradesco' || plano.id === 'servir') && (
         <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs">
           <GeradorFichaRemocao planos={[plano]} initialPlanoId={plano.id} />
         </div>

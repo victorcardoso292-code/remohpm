@@ -1,191 +1,38 @@
 import React from 'react';
 
 /**
- * Brasão de Armas do Estado do Tocantins (Vetor 100% SVG em alta resolução)
+ * Brasão de Armas do Estado do Tocantins Oficial (Vetor SVG Nítido em Alta Definição)
  */
 export const BrasaoTocantinsVector: React.FC<{ size?: number; className?: string }> = ({ 
   size = 58, 
   className = '' 
 }) => {
   return (
-    <svg 
-      width={size} 
-      height={size * 1.06} 
-      viewBox="0 0 160 170" 
-      fill="none" 
-      xmlns="http://www.w3.org/2000/svg"
-      className={`inline-block flex-shrink-0 ${className}`}
-      aria-label="Brasão do Estado do Tocantins"
-    >
-      <defs>
-        <linearGradient id="tocantinsSun" x1="0%" y1="100%" x2="0%" y2="0%">
-          <stop offset="0%" stopColor="#FFA000" />
-          <stop offset="100%" stopColor="#FFEE58" />
-        </linearGradient>
-      </defs>
-
-      {/* Faixa Superior: CO YVY ORE RETAMA */}
-      <path d="M 38 18 Q 80 10 122 18 L 126 12 Q 80 4 34 12 Z" fill="#1C1864" />
-      <path d="M 34 12 L 28 17 L 38 18 Z" fill="#130F47" />
-      <path d="M 126 12 L 132 17 L 122 18 Z" fill="#130F47" />
-      <text 
-        x="80" 
-        y="15.5" 
-        textAnchor="middle" 
-        fill="#FFFFFF" 
-        fontSize="5.8" 
-        fontWeight="900" 
-        fontFamily="sans-serif" 
-        letterSpacing="1.2"
-      >
-        CO YVY ORE RETAMA
-      </text>
-
-      {/* Estrela Amarela Superior */}
-      <polygon 
-        points="80,19 83,27 92,27 85,32 88,40 80,35 72,40 75,32 68,27 77,27" 
-        fill="#FFD200" 
-        stroke="#B38600" 
-        strokeWidth="0.8" 
-      />
-
-      {/* Ramos de Louro Verde (Esquerda e Direita) */}
-      <g fill="#008837" stroke="#005A24" strokeWidth="0.4">
-        {/* Ramo Esquerdo */}
-        <path d="M 40 40 C 22 55 18 85 24 115 C 28 128 36 142 50 152 C 44 140 38 124 36 108 C 34 88 38 65 48 48 Z" />
-        <ellipse cx="28" cy="58" rx="7.5" ry="3.8" transform="rotate(-35 28 58)" />
-        <ellipse cx="22" cy="74" rx="8" ry="4" transform="rotate(-20 22 74)" />
-        <ellipse cx="20" cy="92" rx="8.5" ry="4" transform="rotate(0 20 92)" />
-        <ellipse cx="22" cy="110" rx="8.5" ry="4" transform="rotate(20 22 110)" />
-        <ellipse cx="29" cy="128" rx="8" ry="4" transform="rotate(40 29 128)" />
-        <ellipse cx="40" cy="144" rx="8" ry="4" transform="rotate(60 40 144)" />
-
-        {/* Ramo Direito */}
-        <path d="M 120 40 C 138 55 142 85 136 115 C 132 128 124 142 110 152 C 116 140 122 124 124 108 C 126 88 122 65 112 48 Z" />
-        <ellipse cx="132" cy="58" rx="7.5" ry="3.8" transform="rotate(35 132 58)" />
-        <ellipse cx="138" cy="74" rx="8" ry="4" transform="rotate(20 138 74)" />
-        <ellipse cx="140" cy="92" rx="8.5" ry="4" transform="rotate(0 140 92)" />
-        <ellipse cx="138" cy="110" rx="8.5" ry="4" transform="rotate(-20 138 110)" />
-        <ellipse cx="131" cy="128" rx="8" ry="4" transform="rotate(-40 131 128)" />
-        <ellipse cx="120" cy="144" rx="8" ry="4" transform="rotate(-60 120 144)" />
-      </g>
-
-      {/* Escudo Oval Central com Borda */}
-      <ellipse cx="80" cy="88" rx="42" ry="48" fill="#FFFFFF" stroke="#1C1864" strokeWidth="2.5" />
-      <path 
-        d="M 40 85 C 40 55 58 43 80 43 C 102 43 120 55 120 85 C 120 115 102 131 80 131 C 58 131 40 115 40 85 Z" 
-        fill="#1C1864" 
-      />
-
-      {/* Sol Nascente e Raios Dourados */}
-      <circle cx="80" cy="85" r="14" fill="url(#tocantinsSun)" />
-      <g stroke="#FFD200" strokeWidth="1.8" strokeLinecap="round">
-        <line x1="80" y1="67" x2="80" y2="58" />
-        <line x1="91" y1="71" x2="98" y2="64" />
-        <line x1="97" y1="81" x2="106" y2="78" />
-        <line x1="69" y1="71" x2="62" y2="64" />
-        <line x1="63" y1="81" x2="54" y2="78" />
-        <line x1="86" y1="69" x2="90" y2="61" strokeWidth="1.2" />
-        <line x1="74" y1="69" x2="70" y2="61" strokeWidth="1.2" />
-        <line x1="95" y1="76" x2="102" y2="71" strokeWidth="1.2" />
-        <line x1="65" y1="76" x2="58" y2="71" strokeWidth="1.2" />
-      </g>
-
-      {/* Montanha Triangular Azul e Triângulo Dourado */}
-      <polygon points="80,82 48,118 112,118" fill="#15114D" stroke="#FFFFFF" strokeWidth="1" />
-      <polygon points="80,98 57,124 103,124" fill="#FFD200" />
-
-      {/* Faixas Laterais com Datas */}
-      <path d="M 12 118 L 48 114 L 46 126 L 14 128 Z" fill="#1C1864" />
-      <polygon points="12,118 6,123 14,128" fill="#130F47" />
-      <text x="28" y="123" textAnchor="middle" fill="#FFFFFF" fontSize="6.2" fontWeight="bold" fontFamily="sans-serif">
-        1º JAN
-      </text>
-
-      <path d="M 148 118 L 112 114 L 114 126 L 146 128 Z" fill="#1C1864" />
-      <polygon points="148,118 154,123 146,128" fill="#130F47" />
-      <text x="132" y="123" textAnchor="middle" fill="#FFFFFF" fontSize="6.2" fontWeight="bold" fontFamily="sans-serif">
-        1989
-      </text>
-
-      {/* Faixa Inferior: ESTADO DO TOCANTINS */}
-      <path d="M 16 138 Q 80 162 144 138 L 148 150 Q 80 174 12 150 Z" fill="#1C1864" />
-      <polygon points="12,150 4,142 16,138" fill="#130F47" />
-      <polygon points="148,150 156,142 144,138" fill="#130F47" />
-      <text 
-        x="80" 
-        y="152.5" 
-        textAnchor="middle" 
-        fill="#FFFFFF" 
-        fontSize="8" 
-        fontWeight="900" 
-        fontFamily="sans-serif" 
-        letterSpacing="1.4"
-      >
-        ESTADO DO TOCANTINS
-      </text>
-    </svg>
+    <img 
+      src="/logos/brasao-tocantins.svg" 
+      alt="Brasão do Estado do Tocantins" 
+      style={{ height: `${size}px`, width: 'auto' }}
+      className={`inline-block flex-shrink-0 object-contain ${className}`}
+      loading="eager"
+    />
   );
 };
 
 /**
- * Emblema em Vetor SVG do SERVIR (S Estilizado com Gradientes e Linhas de Movimento)
+ * Emblema em Vetor SVG do SERVIR
  */
 export const EmblemaServirVector: React.FC<{ size?: number; className?: string }> = ({ 
   size = 52, 
   className = '' 
 }) => {
   return (
-    <svg 
-      width={size} 
-      height={size} 
-      viewBox="0 0 100 100" 
-      fill="none" 
-      xmlns="http://www.w3.org/2000/svg"
-      className={`inline-block flex-shrink-0 ${className}`}
-      aria-label="Emblema Servir"
-    >
-      <defs>
-        {/* Gradiente Azul-Ciano do Topo */}
-        <linearGradient id="servirGradTop" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#0077b6" />
-          <stop offset="50%" stopColor="#005f9e" />
-          <stop offset="100%" stopColor="#003f7a" />
-        </linearGradient>
-        {/* Gradiente Verde-Limão/Amarelo da Base */}
-        <linearGradient id="servirGradBot" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#7cb342" />
-          <stop offset="50%" stopColor="#c0ca33" />
-          <stop offset="100%" stopColor="#fbc02d" />
-        </linearGradient>
-      </defs>
-
-      {/* Arco Superior Azul */}
-      <path 
-        d="M 50 6 C 74.3 6 94 25.7 94 50 C 94 51.5 93.8 53 93.5 54.5 L 36 21 C 40.2 10.8 44.8 6 50 6 Z" 
-        fill="url(#servirGradTop)" 
-      />
-      <path 
-        d="M 50 6 C 36 6 24 12.5 16 22.5 L 43 38 L 48 29 L 26 16.5 C 33 10 41 6 50 6 Z" 
-        fill="url(#servirGradTop)" 
-      />
-      {/* Linhas Brancas Diagonais no Topo */}
-      <path d="M 28 32 L 72 57 L 68 60 L 24 35 Z" fill="#FFFFFF" opacity="0.95" />
-      <path d="M 38 24 L 84 51 L 81 54 L 35 27 Z" fill="#FFFFFF" opacity="0.95" />
-
-      {/* Arco Inferior Amarelo/Verde */}
-      <path 
-        d="M 50 94 C 25.7 94 6 74.3 6 50 C 6 48.5 6.2 47 6.5 45.5 L 64 79 C 59.8 89.2 55.2 94 50 94 Z" 
-        fill="url(#servirGradBot)" 
-      />
-      <path 
-        d="M 50 94 C 64 94 76 87.5 84 77.5 L 57 62 L 52 71 L 74 83.5 C 67 90 59 94 50 94 Z" 
-        fill="url(#servirGradBot)" 
-      />
-      {/* Linhas Brancas Diagonais na Base */}
-      <path d="M 72 68 L 28 43 L 32 40 L 76 65 Z" fill="#FFFFFF" opacity="0.95" />
-      <path d="M 62 76 L 16 49 L 19 46 L 65 73 Z" fill="#FFFFFF" opacity="0.95" />
-    </svg>
+    <img 
+      src="/logos/logo-servir.svg" 
+      alt="Emblema Servir" 
+      style={{ height: `${size}px`, width: 'auto' }}
+      className={`inline-block flex-shrink-0 object-contain ${className}`}
+      loading="eager"
+    />
   );
 };
 
@@ -198,19 +45,19 @@ export const LogoGovernoTocantins: React.FC<{
   fontSizeTitle?: string;
   fontSizeSubtitle?: string;
 }> = ({ 
-  size = 54, 
+  size = 56, 
   className = '',
   fontSizeTitle = 'text-[13px] sm:text-[14px]',
-  fontSizeSubtitle = 'text-[15px] sm:text-[17px]'
+  fontSizeSubtitle = 'text-[15px] sm:text-[18px]'
 }) => {
   return (
     <div className={`flex items-center gap-3 ${className}`}>
       <BrasaoTocantinsVector size={size} />
       <div className="flex flex-col justify-center leading-tight">
-        <span className={`${fontSizeTitle} text-black font-normal font-sans tracking-tight`}>
+        <span className={`${fontSizeTitle} text-slate-900 font-normal font-sans tracking-tight`}>
           Secretaria da administração
         </span>
-        <span className={`${fontSizeSubtitle} text-black font-black font-sans uppercase tracking-wider`}>
+        <span className={`${fontSizeSubtitle} text-slate-900 font-black font-sans uppercase tracking-wider`}>
           GOVERNO DO TOCANTINS
         </span>
       </div>
@@ -219,36 +66,30 @@ export const LogoGovernoTocantins: React.FC<{
 };
 
 /**
- * Bloco Direito: Emblema S + "Servir" + "SAÚDE PARA QUEM CUIDA DO TOCANTINS"
+ * Bloco Direito: Logo Oficial SERVIR Completa (Emblema S + Servir + Tagline)
  */
 export const LogoServir: React.FC<{ 
   size?: number; 
   className?: string;
-  fontSizeLogo?: string;
-  fontSizeTagline?: string;
 }> = ({ 
   size = 48, 
-  className = '',
-  fontSizeLogo = 'text-[32px] sm:text-[38px]',
-  fontSizeTagline = 'text-[7.5px] sm:text-[8.5px]'
+  className = '' 
 }) => {
   return (
-    <div className={`flex items-center gap-2.5 ${className}`}>
-      <EmblemaServirVector size={size} />
-      <div className="flex flex-col justify-center">
-        <span className={`${fontSizeLogo} font-black tracking-tight leading-none text-[#004785] font-sans`}>
-          Servir
-        </span>
-        <span className={`${fontSizeTagline} font-black uppercase tracking-tight text-black leading-tight mt-0.5 whitespace-nowrap`}>
-          SAÚDE PARA QUEM CUIDA DO TOCANTINS
-        </span>
-      </div>
+    <div className={`flex items-center ${className}`}>
+      <img 
+        src="/logos/logo-servir.svg" 
+        alt="Servir - Saúde para quem cuida do Tocantins" 
+        style={{ height: `${size}px`, width: 'auto' }}
+        className="object-contain"
+        loading="eager"
+      />
     </div>
   );
 };
 
 /**
- * Cabeçalho Oficial Integrado (Idêntico à imagem de referência do Tocantins / SERVIR)
+ * Cabeçalho Oficial Integrado (Idêntico à imagem oficial do Estado do Tocantins / SERVIR)
  */
 export const CabecalhoOficialServir: React.FC<{ 
   compact?: boolean;
@@ -261,7 +102,7 @@ export const CabecalhoOficialServir: React.FC<{
     <div className={`w-full flex items-center justify-between gap-4 py-1.5 ${className}`}>
       {/* Lado Esquerdo: Governo do Tocantins */}
       <LogoGovernoTocantins 
-        size={compact ? 44 : 56} 
+        size={compact ? 44 : 58} 
         fontSizeTitle={compact ? 'text-[11px] sm:text-[12px]' : 'text-[13px] sm:text-[14px]'}
         fontSizeSubtitle={compact ? 'text-[13px] sm:text-[15px]' : 'text-[16px] sm:text-[18px]'}
       />
@@ -269,8 +110,6 @@ export const CabecalhoOficialServir: React.FC<{
       {/* Lado Direito: Servir */}
       <LogoServir 
         size={compact ? 40 : 50} 
-        fontSizeLogo={compact ? 'text-[26px] sm:text-[32px]' : 'text-[32px] sm:text-[38px]'}
-        fontSizeTagline={compact ? 'text-[6.5px] sm:text-[7.5px]' : 'text-[7.5px] sm:text-[8.5px]'}
       />
     </div>
   );
@@ -278,3 +117,275 @@ export const CabecalhoOficialServir: React.FC<{
 
 // Aliases para compatibilidade reversa
 export const BrasaoTocantins = BrasaoTocantinsVector;
+
+/**
+ * Renderizador de Alta Resolução em Canvas do Cabeçalho Oficial do SERVIR (380+ DPI)
+ * Produz um PNG Base64 cristalino para inclusão direta no jsPDF
+ */
+export function getServirHeaderCanvasDataUrl(): string {
+  if (typeof document === 'undefined') return '';
+
+  try {
+    const canvas = document.createElement('canvas');
+    // Escala super-amostrada 15x (2910 x 210 px) para nitidez absoluta no PDF A4 (194mm x 14mm)
+    canvas.width = 2910;
+    canvas.height = 210;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return '';
+
+    // Fundo branco limpo
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Ativar anti-aliasing de alta qualidade
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+
+    // ----------------------------------------------------
+    // 1. BRASÃO DO ESTADO DO TOCANTINS (LADO ESQUERDO)
+    // ----------------------------------------------------
+    const bX = 95;
+    const bY = 105;
+
+    ctx.save();
+    ctx.translate(bX, bY);
+    const bScale = 1.08;
+    ctx.scale(bScale, bScale);
+
+    // Ramos de Louro Verde (Esquerda e Direita)
+    ctx.fillStyle = '#008A3B';
+    ctx.beginPath();
+    // Esquerda
+    ctx.ellipse(-45, -5, 12, 6, -0.6, 0, Math.PI * 2);
+    ctx.ellipse(-52, 15, 13, 6, -0.3, 0, Math.PI * 2);
+    ctx.ellipse(-54, 35, 13, 6, 0, 0, Math.PI * 2);
+    ctx.ellipse(-48, 55, 13, 6, 0.4, 0, Math.PI * 2);
+    ctx.ellipse(-32, 70, 13, 6, 0.8, 0, Math.PI * 2);
+    // Direita
+    ctx.ellipse(45, -5, 12, 6, 0.6, 0, Math.PI * 2);
+    ctx.ellipse(52, 15, 13, 6, 0.3, 0, Math.PI * 2);
+    ctx.ellipse(54, 35, 13, 6, 0, 0, Math.PI * 2);
+    ctx.ellipse(48, 55, 13, 6, -0.4, 0, Math.PI * 2);
+    ctx.ellipse(32, 70, 13, 6, -0.8, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Laço verde inferior
+    ctx.fillStyle = '#007030';
+    ctx.beginPath();
+    ctx.ellipse(0, 75, 15, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Escudo Oval com borda azul escura
+    ctx.fillStyle = '#FFFFFF';
+    ctx.strokeStyle = '#1B1564';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.ellipse(0, 25, 42, 48, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // Interior Azul do Escudo
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(0, 25, 39, 45, 0, 0, Math.PI * 2);
+    ctx.clip();
+
+    ctx.fillStyle = '#1B1564';
+    ctx.fillRect(-50, -30, 100, 110);
+
+    // Sol Nascente Dourado com Raios Nítidos
+    const sunGrad = ctx.createLinearGradient(0, 40, 0, 0);
+    sunGrad.addColorStop(0, '#FF9900');
+    sunGrad.addColorStop(1, '#FFEA00');
+    ctx.fillStyle = sunGrad;
+    ctx.beginPath();
+    ctx.arc(0, 20, 14, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Raios do Sol
+    ctx.fillStyle = '#FFC700';
+    ctx.strokeStyle = '#FFC700';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(0, 2); ctx.lineTo(0, -10);
+    ctx.moveTo(14, 6); ctx.lineTo(24, -2);
+    ctx.moveTo(-14, 6); ctx.lineTo(-24, -2);
+    ctx.moveTo(20, 18); ctx.lineTo(30, 15);
+    ctx.moveTo(-20, 18); ctx.lineTo(-30, 15);
+    ctx.stroke();
+
+    // Faixa Branca Central Chevron
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.moveTo(0, 14);
+    ctx.lineTo(-45, 48);
+    ctx.lineTo(-45, 60);
+    ctx.lineTo(0, 26);
+    ctx.lineTo(45, 60);
+    ctx.lineTo(45, 48);
+    ctx.closePath();
+    ctx.fill();
+
+    // Montanha Triangular / Chevron Azul
+    ctx.fillStyle = '#1B1564';
+    ctx.beginPath();
+    ctx.moveTo(0, 20);
+    ctx.lineTo(-38, 56);
+    ctx.lineTo(-38, 68);
+    ctx.lineTo(0, 36);
+    ctx.lineTo(38, 68);
+    ctx.lineTo(38, 56);
+    ctx.closePath();
+    ctx.fill();
+
+    // Triângulo Amarelo Interno na Base
+    ctx.fillStyle = '#FFC700';
+    ctx.beginPath();
+    ctx.moveTo(0, 32);
+    ctx.lineTo(-26, 68);
+    ctx.lineTo(26, 68);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.restore(); // Fim do clip do escudo
+
+    // Faixa Superior: CO YVY ORE RETAMA
+    ctx.fillStyle = '#1B1564';
+    ctx.beginPath();
+    ctx.rect(-46, -42, 92, 14);
+    ctx.fill();
+
+    // Estrela de 5 Pontas Superior
+    ctx.fillStyle = '#FFD200';
+    ctx.strokeStyle = '#1B1564';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let i = 0; i < 5; i++) {
+      const angle = (i * 4 * Math.PI) / 5 - Math.PI / 2;
+      const x = 0 + 10 * Math.cos(angle);
+      const y = -22 + 10 * Math.sin(angle);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = '900 8.5px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('CO YVY ORE RETAMA', 0, -32);
+
+    // Faixas Laterais com Datas
+    ctx.fillStyle = '#1B1564';
+    ctx.fillRect(-62, 45, 30, 12);
+    ctx.fillRect(32, 45, 30, 12);
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 8px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    ctx.fillText('1º JAN', -47, 54);
+    ctx.fillText('1989', 47, 54);
+
+    // Faixa Inferior: ESTADO DO TOCANTINS
+    ctx.fillStyle = '#1B1564';
+    ctx.beginPath();
+    ctx.roundRect(-64, 68, 128, 16, 4);
+    ctx.fill();
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = '900 9.5px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    ctx.fillText('ESTADO DO TOCANTINS', 0, 80);
+
+    ctx.restore(); // Fim da transformação do brasão
+
+    // ----------------------------------------------------
+    // 2. TEXTO: Secretaria da administração / GOVERNO DO TOCANTINS
+    // ----------------------------------------------------
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#111827';
+    ctx.font = 'normal 38px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
+    ctx.fillText('Secretaria da administração', 195, 84);
+
+    ctx.font = '900 55px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
+    ctx.letterSpacing = '1.2px';
+    ctx.fillText('GOVERNO DO TOCANTINS', 195, 146);
+
+    // ----------------------------------------------------
+    // 3. LOGO SERVIR (LADO DIREITO - 100% NÍTIDA)
+    // ----------------------------------------------------
+    const sX = 2170;
+    const sY = 105;
+    const sR = 72;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(sX, sY, sR, 0, Math.PI * 2);
+    ctx.closePath();
+    ctx.clip();
+
+    // Gradiente Verde-Amarelo Base
+    const gradGreen = ctx.createLinearGradient(sX - sR, sY - sR, sX + sR, sY + sR);
+    gradGreen.addColorStop(0, '#8DB82A');
+    gradGreen.addColorStop(0.5, '#C2CE27');
+    gradGreen.addColorStop(1, '#FFD400');
+    ctx.fillStyle = gradGreen;
+    ctx.fillRect(sX - sR, sY - sR, sR * 2, sR * 2);
+
+    // Gradiente Azul Superior
+    const gradBlue = ctx.createLinearGradient(sX - sR, sY + sR, sX + sR, sY - sR);
+    gradBlue.addColorStop(0, '#004D8C');
+    gradBlue.addColorStop(0.6, '#02639E');
+    gradBlue.addColorStop(1, '#0A7E9F');
+    ctx.fillStyle = gradBlue;
+
+    ctx.beginPath();
+    ctx.moveTo(sX - sR, sY - sR);
+    ctx.lineTo(sX + sR, sY - sR);
+    ctx.lineTo(sX + sR, sY - 14);
+    ctx.lineTo(sX + 28, sY - 6);
+    ctx.lineTo(sX + 20, sY - 20);
+    ctx.lineTo(sX - 6, sY - 12);
+    ctx.lineTo(sX - 4, sY + 6);
+    ctx.lineTo(sX - 35, sY + 12);
+    ctx.lineTo(sX - sR, sY + 18);
+    ctx.closePath();
+    ctx.fill();
+
+    // Linha Divisória Branca Central (Espinha do S)
+    ctx.lineWidth = 8;
+    ctx.strokeStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.moveTo(sX - sR - 10, sY + 22);
+    ctx.lineTo(sX - 35, sY + 15);
+    ctx.lineTo(sX - 6, sY + 8);
+    ctx.lineTo(sX - 8, sY - 10);
+    ctx.lineTo(sX + 18, sY - 18);
+    ctx.lineTo(sX + 26, sY - 5);
+    ctx.lineTo(sX + sR + 10, sY - 16);
+    ctx.stroke();
+
+    // Recortes brancos diagonais no azul
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(sX - 32, sY - 30, 26, 7);
+    ctx.fillRect(sX + 8, sY + 22, 26, 7);
+
+    ctx.restore(); // Fim do clip do emblema S
+
+    // Texto: "Servir"
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#004785';
+    ctx.font = '900 105px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
+    ctx.letterSpacing = '-2px';
+    ctx.fillText('Servir', 2268, 114);
+
+    // Texto: "SAÚDE PARA QUEM CUIDA DO TOCANTINS"
+    ctx.fillStyle = '#111827';
+    ctx.font = '900 24.5px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
+    ctx.letterSpacing = '-0.4px';
+    ctx.fillText('SAÚDE PARA QUEM CUIDA DO TOCANTINS', 2272, 155);
+
+    return canvas.toDataURL('image/png');
+  } catch (err) {
+    console.error('Erro ao renderizar cabeçalho canvas do Servir:', err);
+    return '';
+  }
+}
+

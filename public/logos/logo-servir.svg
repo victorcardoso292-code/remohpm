@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 240" width="100%" height="100%">
+  <defs>
+    <!-- Gradiente Azul do Emblema -->
+    <linearGradient id="servirBlueGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#004D8C"/>
+      <stop offset="60%" stop-color="#02639E"/>
+      <stop offset="100%" stop-color="#0A7E9F"/>
+    </linearGradient>
+
+    <!-- Gradiente Verde/Amarelo do Emblema -->
+    <linearGradient id="servirGreenYellowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8DB82A"/>
+      <stop offset="50%" stop-color="#C2CE27"/>
+      <stop offset="100%" stop-color="#FFD400"/>
+    </linearGradient>
+
+    <!-- Recorte Circular Perfeito do Emblema -->
+    <clipPath id="emblemCircleClip">
+      <circle cx="105" cy="120" r="82"/>
+    </clipPath>
+  </defs>
+
+  <!-- ================= EMBLEMA "S" DINÂMICO ================= -->
+  <g clip-path="url(#emblemCircleClip)">
+    <!-- Base com as duas metades -->
+    
+    <!-- Parte Inferior: Verde-Amarelo -->
+    <rect x="15" y="30" width="180" height="180" fill="url(#servirGreenYellowGrad)"/>
+
+    <!-- Parte Superior: Azul Oceano -->
+    <path d="M 15 30 L 195 30 L 195 105 L 35 158 Z" fill="url(#servirBlueGrad)"/>
+
+    <!-- Canal Diagonal Branco Central (Espinha do S) -->
+    <polygon points="10,166 180,98 195,116 25,184" fill="#FFFFFF"/>
+
+    <!-- ================= RECORTES DIAGONAIS ESTILIZADOS (Linhas de Movimento) ================= -->
+    <!-- Faixas brancas na metade azul -->
+    <polygon points="45,95 145,55 149,63 49,103" fill="#FFFFFF"/>
+    <polygon points="75,82 170,44 174,52 79,90" fill="#FFFFFF"/>
+    <polygon points="20,135 100,103 104,111 24,143" fill="#FFFFFF"/>
+
+    <!-- Faixas brancas na metade verde/amarela -->
+    <polygon points="50,188 135,154 139,162 54,196" fill="#FFFFFF"/>
+    <polygon points="80,195 158,164 162,172 84,203" fill="#FFFFFF"/>
+  </g>
+
+  <!-- ================= TEXTO "Servir" ================= -->
+  <text x="215" y="142" 
+        fill="#004785" 
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" 
+        font-weight="900" 
+        font-size="112" 
+        letter-spacing="-2.5">
+    Servir
+  </text>
+
+  <!-- ================= SUBTÍTULO "SAÚDE PARA QUEM CUIDA DO TOCANTINS" ================= -->
+  <text x="218" y="180" 
+        fill="#111827" 
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" 
+        font-weight="900" 
+        font-size="19.5" 
+        letter-spacing="-0.3">
+    SAÚDE PARA QUEM CUIDA DO TOCANTINS
+  </text>
+</svg>

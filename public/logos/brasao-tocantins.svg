@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 540" width="100%" height="100%">
+  <defs>
+    <!-- Gradiente do Sol -->
+    <linearGradient id="sunGoldGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#FF9900"/>
+      <stop offset="100%" stop-color="#FFEA00"/>
+    </linearGradient>
+
+    <!-- Path para texto na faixa superior -->
+    <path id="topRibbonArc" d="M 90 76 Q 200 40 310 76" fill="none"/>
+    <!-- Path para texto na faixa inferior -->
+    <path id="botRibbonArc" d="M 30 468 Q 200 515 370 468" fill="none"/>
+  </defs>
+
+  <!-- ================= RAMOS DE LOURO (VERDE) ================= -->
+  <g fill="#008A3B" stroke="#005A26" stroke-width="0.75" stroke-linejoin="round">
+    <!-- Ramo Esquerdo -->
+    <!-- Folhas da base subindo -->
+    <path d="M 195 490 C 130 480 75 420 50 340 C 35 290 32 230 45 170 C 52 140 68 115 88 95 C 80 120 70 155 68 190 C 65 245 78 300 105 345 C 130 388 170 425 200 445 Z" />
+    
+    <!-- Folhas individuais esquerdas externas com pontas afiadas -->
+    <path d="M 52 165 C 38 180 32 205 30 230 C 42 225 56 215 62 200 Z" />
+    <path d="M 40 220 C 26 240 22 270 24 300 C 38 290 52 275 58 255 Z" />
+    <path d="M 28 290 C 18 315 16 345 22 375 C 36 360 52 342 62 320 Z" />
+    <path d="M 28 360 C 22 385 25 415 38 440 C 50 420 68 400 82 380 Z" />
+    <path d="M 45 425 C 42 445 52 470 70 488 C 80 465 100 442 118 425 Z" />
+
+    <!-- Folhas internas esquerdas -->
+    <path d="M 80 125 C 75 145 75 170 82 190 C 92 175 100 155 102 135 Z" />
+    <path d="M 72 185 C 70 210 75 235 85 255 C 95 235 102 215 102 195 Z" />
+    <path d="M 72 250 C 75 275 82 300 95 320 C 105 300 112 278 112 258 Z" />
+    <path d="M 80 315 C 88 340 100 360 118 378 C 125 355 130 332 128 310 Z" />
+
+    <!-- Ramo Direito -->
+    <path d="M 205 490 C 270 480 325 420 350 340 C 365 290 368 230 355 170 C 348 140 332 115 312 95 C 320 120 330 155 332 190 C 335 245 322 300 295 345 C 270 388 230 425 200 445 Z" />
+    
+    <!-- Folhas individuais direitas externas -->
+    <path d="M 348 165 C 362 180 368 205 370 230 C 358 225 344 215 338 200 Z" />
+    <path d="M 360 220 C 374 240 378 270 376 300 C 362 290 348 275 342 255 Z" />
+    <path d="M 372 290 C 382 315 384 345 378 375 C 364 360 348 342 338 320 Z" />
+    <path d="M 372 360 C 378 385 375 415 362 440 C 350 420 332 400 318 380 Z" />
+    <path d="M 355 425 C 358 445 348 470 330 488 C 320 465 300 442 282 425 Z" />
+
+    <!-- Folhas internas direitas -->
+    <path d="M 320 125 C 325 145 325 170 318 190 C 308 175 300 155 298 135 Z" />
+    <path d="M 328 185 C 330 210 325 235 315 255 C 305 235 298 215 298 195 Z" />
+    <path d="M 328 250 C 325 275 318 300 305 320 C 295 300 288 278 288 258 Z" />
+    <path d="M 320 315 C 312 340 300 360 282 378 C 275 355 270 332 272 310 Z" />
+
+    <!-- Laço inferior verde cruzado -->
+    <path d="M 160 515 C 190 495 210 495 240 515 C 220 535 180 535 160 515 Z" fill="#007030" />
+    <path d="M 195 490 C 185 520 165 538 140 540 C 170 532 190 515 200 495 C 210 515 230 532 260 540 C 235 538 215 520 205 490 Z" />
+  </g>
+
+  <!-- ================= ESCUDO CENTRAL OVAL ================= -->
+  <!-- Borda do Escudo -->
+  <ellipse cx="200" cy="275" rx="104" ry="142" fill="#FFFFFF" stroke="#1B1564" stroke-width="6"/>
+
+  <!-- Fundo Azul do Escudo -->
+  <clipPath id="shieldClip">
+    <ellipse cx="200" cy="275" rx="100" ry="138"/>
+  </clipPath>
+
+  <g clip-path="url(#shieldClip)">
+    <!-- Céu Azul Profundo -->
+    <rect x="80" y="120" width="240" height="300" fill="#1B1564" />
+
+    <!-- Sol Radiante Nascente -->
+    <!-- Raios Triangulares e Lineares Dourados -->
+    <g fill="#FFC700" stroke="#FFC700" stroke-linecap="round">
+      <!-- Raio Central Superior -->
+      <polygon points="200,165 196,250 204,250" />
+      <!-- Raios Diagonais -->
+      <polygon points="225,172 201,250 208,247" />
+      <polygon points="175,172 192,247 199,250" />
+      <polygon points="248,190 204,252 211,246" />
+      <polygon points="152,190 189,246 196,252" />
+      <polygon points="265,216 205,255 212,248" />
+      <polygon points="135,216 188,248 195,255" />
+      <polygon points="275,248 206,257 212,251" />
+      <polygon points="125,248 188,251 194,257" />
+    </g>
+
+    <!-- Disco do Sol Nascente -->
+    <circle cx="200" cy="255" r="42" fill="url(#sunGoldGrad)" stroke="#FFA000" stroke-width="1.5" />
+
+    <!-- Faixa Branca Central Invertida em V (Chevron Branco) -->
+    <polygon points="200,248 70,335 70,370 200,283 330,370 330,335" fill="#FFFFFF" />
+
+    <!-- Montanha / Chevron Azul Escuro -->
+    <polygon points="200,265 95,355 95,395 200,325 305,395 305,355" fill="#1B1564" />
+
+    <!-- Triângulo Base Amarelo / Dourado -->
+    <polygon points="200,312 115,415 285,415" fill="#FFC700" stroke="#E5A800" stroke-width="2" />
+  </g>
+
+  <!-- ================= FAIXAS LATERAIS (1º JAN / 1989) ================= -->
+  <!-- Faixa Esquerda -->
+  <g>
+    <!-- Fita com dobras -->
+    <path d="M 28 375 L 110 365 L 105 398 L 32 408 L 45 392 Z" fill="#1B1564" stroke="#120E45" stroke-width="1" />
+    <!-- Dobra traseira -->
+    <polygon points="110,365 118,375 105,398" fill="#120E45" />
+    <text x="68" y="394" fill="#FFFFFF" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="16.5" text-anchor="middle" letter-spacing="0.5">1º JAN</text>
+  </g>
+
+  <!-- Faixa Direita -->
+  <g>
+    <!-- Fita com dobras -->
+    <path d="M 372 375 L 290 365 L 295 398 L 368 408 L 355 392 Z" fill="#1B1564" stroke="#120E45" stroke-width="1" />
+    <!-- Dobra traseira -->
+    <polygon points="290,365 282,375 295,398" fill="#120E45" />
+    <text x="332" y="394" fill="#FFFFFF" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="16.5" text-anchor="middle" letter-spacing="0.5">1989</text>
+  </g>
+
+  <!-- ================= FAIXA SUPERIOR: CO YVY ORE RETAMA ================= -->
+  <g>
+    <!-- Fita Azul Superior Ondulada -->
+    <path d="M 72 82 Q 200 44 328 82 L 348 62 L 332 50 Q 200 16 68 50 L 52 62 Z" fill="#1B1564" />
+    <!-- Pontas com corte em V -->
+    <polygon points="52,62 35,76 60,86 68,76" fill="#120E45" />
+    <polygon points="348,62 365,76 340,86 332,76" fill="#120E45" />
+    
+    <text fill="#FFFFFF" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="15" letter-spacing="2">
+      <textPath href="#topRibbonArc" startOffset="50%" text-anchor="middle">
+        CO YVY ORE RETAMA
+      </textPath>
+    </text>
+  </g>
+
+  <!-- ================= ESTRELA AMARELA SUPERIOR ================= -->
+  <!-- 5 Pontas Douradas com Borda Azul -->
+  <polygon points="200,38 208,58 230,58 212,71 219,92 200,79 181,92 188,71 170,58 192,58" 
+           fill="#FFD200" stroke="#1B1564" stroke-width="2.5" stroke-linejoin="round" />
+
+  <!-- ================= FAIXA INFERIOR: ESTADO DO TOCANTINS ================= -->
+  <g>
+    <!-- Fita Inferior Ondulada Grande -->
+    <path d="M 18 450 Q 200 495 382 450 L 388 478 Q 200 528 12 478 Z" fill="#1B1564" />
+    <!-- Dobras e pontas laterais -->
+    <polygon points="12,478 0,460 22,446 25,462" fill="#120E45" />
+    <polygon points="388,478 400,460 378,446 375,462" fill="#120E45" />
+
+    <text fill="#FFFFFF" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="21" letter-spacing="3.2">
+      <textPath href="#botRibbonArc" startOffset="50%" text-anchor="middle">
+        ESTADO DO TOCANTINS
+      </textPath>
+    </text>
+  </g>
+</svg>

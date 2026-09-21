@@ -70,9 +70,21 @@
     print-color-adjust: exact !important;
   }
 
-  /* Hide everything except printable element if marked */
-  body.printing-ficha *:not(#ficha-remocao-document-root):not(#ficha-remocao-document-root *) {
-    display: none !important;
+  /* Force clean page breaks */
+  .ficha-page-1 {
+    page-break-after: always !important;
+    break-after: page !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    margin-bottom: 0 !important;
+  }
+
+  .ficha-page-2 {
+    page-break-before: always !important;
+    break-before: page !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    margin-top: 0 !important;
   }
 
   .print-page-break {

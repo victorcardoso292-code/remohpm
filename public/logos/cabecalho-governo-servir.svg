@@ -1,0 +1,152 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1940 140" width="100%" height="100%">
+  <defs>
+    <linearGradient id="hdrSunGold" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#FF9900"/>
+      <stop offset="100%" stop-color="#FFEA00"/>
+    </linearGradient>
+    <linearGradient id="hdrServirBlue" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#004D8C"/>
+      <stop offset="60%" stop-color="#02639E"/>
+      <stop offset="100%" stop-color="#0A7E9F"/>
+    </linearGradient>
+    <linearGradient id="hdrServirGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8DB82A"/>
+      <stop offset="50%" stop-color="#C2CE27"/>
+      <stop offset="100%" stop-color="#FFD400"/>
+    </linearGradient>
+    <clipPath id="hdrCircleClip">
+      <circle cx="1485" cy="70" r="48"/>
+    </clipPath>
+    <clipPath id="hdrShieldClip">
+      <ellipse cx="62" cy="74" rx="27" ry="36"/>
+    </clipPath>
+  </defs>
+
+  <rect width="1940" height="140" fill="#FFFFFF"/>
+
+  <!-- ================= LADO ESQUERDO: BRASÃO DO ESTADO DO TOCANTINS ================= -->
+  <g transform="translate(6, 4)">
+    <!-- Ramos de Louro Verde -->
+    <g fill="#008A3B" stroke="#005A26" stroke-width="0.4">
+      <path d="M 60 120 C 40 115 25 100 18 80 C 14 66 14 52 17 38 C 20 30 25 24 30 20 C 27 26 25 34 24 42 C 23 55 26 68 33 78 C 40 88 50 97 60 102 Z" />
+      <ellipse cx="20" cy="46" rx="6" ry="3" transform="rotate(-30 20 46)" />
+      <ellipse cx="16" cy="60" rx="6.5" ry="3.2" transform="rotate(-15 16 60)" />
+      <ellipse cx="15" cy="75" rx="7" ry="3.2" transform="rotate(0 15 75)" />
+      <ellipse cx="18" cy="90" rx="7" ry="3.2" transform="rotate(20 18 90)" />
+      <ellipse cx="25" cy="104" rx="7" ry="3.2" transform="rotate(40 25 104)" />
+
+      <path d="M 64 120 C 84 115 99 100 106 80 C 110 66 110 52 107 38 C 104 30 99 24 94 20 C 97 26 99 34 100 42 C 101 55 98 68 91 78 C 84 88 74 97 64 102 Z" />
+      <ellipse cx="104" cy="46" rx="6" ry="3" transform="rotate(30 104 46)" />
+      <ellipse cx="108" cy="60" rx="6.5" ry="3.2" transform="rotate(15 108 60)" />
+      <ellipse cx="109" cy="75" rx="7" ry="3.2" transform="rotate(0 109 75)" />
+      <ellipse cx="106" cy="90" rx="7" ry="3.2" transform="rotate(-20 106 90)" />
+      <ellipse cx="99" cy="104" rx="7" ry="3.2" transform="rotate(-40 99 104)" />
+    </g>
+
+    <!-- Escudo Central Oval -->
+    <ellipse cx="62" cy="74" rx="28.5" ry="38" fill="#FFFFFF" stroke="#1B1564" stroke-width="2"/>
+    <g clip-path="url(#hdrShieldClip)">
+      <rect x="30" y="32" width="64" height="80" fill="#1B1564" />
+      <!-- Sol e Raios -->
+      <g fill="#FFC700" stroke="#FFC700" stroke-linecap="round">
+        <polygon points="62,44 60.5,68 63.5,68" />
+        <polygon points="69,46 62,68 64,67" />
+        <polygon points="55,46 60,67 62,68" />
+        <polygon points="75,51 63,69 65,67" />
+        <polygon points="49,51 59,67 61,69" />
+        <polygon points="80,58 63,70 65,68" />
+        <polygon points="44,58 59,68 61,70" />
+      </g>
+      <circle cx="62" cy="69" r="11" fill="url(#hdrSunGold)" stroke="#FFA000" stroke-width="0.5" />
+      <!-- Chevron Branco -->
+      <polygon points="62,66 26,90 26,100 62,76 98,100 98,90" fill="#FFFFFF" />
+      <!-- Chevron Azul -->
+      <polygon points="62,71 33,96 33,107 62,88 91,107 91,96" fill="#1B1564" />
+      <!-- Triângulo Base Amarelo -->
+      <polygon points="62,84 38,112 86,112" fill="#FFC700" />
+    </g>
+
+    <!-- Estrela Amarela Superior -->
+    <polygon points="62,14 64,19 70,19 65,23 67,29 62,25 57,29 59,23 54,19 60,19" 
+             fill="#FFD200" stroke="#1B1564" stroke-width="0.8" />
+
+    <!-- Faixa Superior: CO YVY ORE RETAMA -->
+    <path d="M 28 24 Q 62 14 96 24 L 99 20 Q 62 10 25 20 Z" fill="#1B1564" />
+    <polygon points="25,20 20,23 28,24" fill="#120E45" />
+    <polygon points="99,20 104,23 96,24" fill="#120E45" />
+    <text x="62" y="21.5" text-anchor="middle" fill="#FFFFFF" font-size="4.2" font-weight="900" font-family="sans-serif" letter-spacing="0.8">
+      CO YVY ORE RETAMA
+    </text>
+
+    <!-- Faixas Laterais: 1º JAN / 1989 -->
+    <path d="M 8 98 L 36 95 L 34 105 L 10 106 Z" fill="#1B1564" />
+    <text x="21" y="103" text-anchor="middle" fill="#FFFFFF" font-size="4.6" font-weight="900" font-family="sans-serif">1º JAN</text>
+
+    <path d="M 116 98 L 88 95 L 90 105 L 114 106 Z" fill="#1B1564" />
+    <text x="103" y="103" text-anchor="middle" fill="#FFFFFF" font-size="4.6" font-weight="900" font-family="sans-serif">1989</text>
+
+    <!-- Faixa Inferior: ESTADO DO TOCANTINS -->
+    <path d="M 12 115 Q 62 134 112 115 L 115 125 Q 62 144 9 125 Z" fill="#1B1564" />
+    <polygon points="9,125 3,118 12,115" fill="#120E45" />
+    <polygon points="115,125 121,118 112,115" fill="#120E45" />
+    <text x="62" y="127" text-anchor="middle" fill="#FFFFFF" font-size="6.5" font-weight="900" font-family="sans-serif" letter-spacing="1.1">
+      ESTADO DO TOCANTINS
+    </text>
+  </g>
+
+  <!-- ================= TEXTOS DO GOVERNO DO TOCANTINS ================= -->
+  <text x="142" y="58" 
+        fill="#111827" 
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" 
+        font-weight="400" 
+        font-size="25" 
+        letter-spacing="-0.3">
+    Secretaria da administração
+  </text>
+  
+  <text x="142" y="99" 
+        fill="#111827" 
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" 
+        font-weight="900" 
+        font-size="37" 
+        letter-spacing="1.2">
+    GOVERNO DO TOCANTINS
+  </text>
+
+  <!-- ================= LADO DIREITO: LOGO SERVIR COMPLETA ================= -->
+  <g transform="translate(1415, 0)">
+    <!-- Emblema Esférico S -->
+    <g clip-path="url(#hdrCircleClip)">
+      <rect x="1437" y="22" width="96" height="96" fill="url(#hdrServirGreen)"/>
+      <path d="M 1437 22 L 1533 22 L 1533 62 L 1447 92 Z" fill="url(#hdrServirBlue)"/>
+      <polygon points="1433,96 1526,58 1534,68 1441,106" fill="#FFFFFF"/>
+      
+      <!-- Linhas de Movimento -->
+      <polygon points="1452,58 1506,36 1508,41 1454,63" fill="#FFFFFF"/>
+      <polygon points="1468,51 1520,30 1522,35 1470,56" fill="#FFFFFF"/>
+      <polygon points="1440,78 1484,60 1486,65 1442,83" fill="#FFFFFF"/>
+      <polygon points="1456,108 1502,89 1504,94 1458,113" fill="#FFFFFF"/>
+      <polygon points="1472,112 1515,95 1517,100 1474,117" fill="#FFFFFF"/>
+    </g>
+
+    <!-- Texto "Servir" -->
+    <text x="1550" y="81" 
+          fill="#004785" 
+          font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" 
+          font-weight="900" 
+          font-size="70" 
+          letter-spacing="-1.8">
+      Servir
+    </text>
+
+    <!-- Tagline "SAÚDE PARA QUEM CUIDA DO TOCANTINS" -->
+    <text x="1552" y="106" 
+          fill="#111827" 
+          font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" 
+          font-weight="900" 
+          font-size="16.5" 
+          letter-spacing="-0.2">
+      SAÚDE PARA QUEM CUIDA DO TOCANTINS
+    </text>
+  </g>
+</svg>
