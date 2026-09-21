@@ -5,7 +5,9 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(({ command }) => {
   const isDev = command === 'serve';
-  const base = isDev ? '/' : (process.env.VITE_BASE_PATH || '/REMOMEDICAL/');
+  // Com './' os assets gerados utilizam caminho relativo, funcionando perfeitamente 
+  // tanto em qualquer subpasta do GitHub Pages (/remohpm/, /REMOMEDICAL/) quanto na raiz.
+  const base = isDev ? '/' : (process.env.VITE_BASE_PATH || './');
 
   return {
     base,
