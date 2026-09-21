@@ -1,8 +1,9 @@
 # Central de Remoções Hospitalares — Medical • Kora Saúde (HPM)
-Versão: 2.6
-Atualização: Autoria João Victor Cardoso Costa e Autenticação Operacional HPM.
+Versão: 2.7
+Atualização: Navegação direta para Página Completa de Detalhes do Convênio, com layout vertical espaçoso, seções organizadas sem amontoamento e identificação de autoria.
 
 ## Criação e Autoria:
 - **Criação**: João Victor Cardoso Costa
 - **Instituição**: Hospital Palmas Medical (HPM) — Medical • Kora Saúde
 - **Acesso**: Login HPM / Senha HPM@2026
+- **Recurso**: Página de Detalhe de Convênios com espaçamento ampliado, títulos e dados ordenados sequencialmente.

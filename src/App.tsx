@@ -4,6 +4,7 @@ import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { PlanoCard } from './components/PlanoCard';
 import { PlanoDetailModal } from './components/PlanoDetailModal';
+import { PlanoDetalhePagina } from './components/PlanoDetalhePagina';
 import { SimuladorRemocao } from './components/SimuladorRemocao';
 import { GeradorFichaRemocao } from './components/GeradorFichaRemocao';
 import { EmpresasRemocao } from './components/EmpresasRemocao';
@@ -93,8 +94,13 @@ function MainApp() {
       <Header
         onOpenMaster={() => setIsMasterModalOpen(true)}
         searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        activeTab={activeTab}
+        onSearchChange={(term) => {
+          setSearchTerm(term);
+          if (term && selectedPlano) {
+            setSelectedPlano(null);
+          }
+        }}
+        activeTab={selectedPlano ? 'planos' : activeTab}
         onLogout={handleLogout}
       />
 
@@ -103,149 +109,168 @@ function MainApp() {
         
         {/* Sidebar Navigation */}
         <Sidebar
-          activeTab={activeTab}
+          activeTab={selectedPlano ? '' : activeTab}
           onSelectTab={(tab) => {
+            setSelectedPlano(null);
             setActiveTab(tab);
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
           onOpenMaster={() => setIsMasterModalOpen(true)}
           selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
+          onSelectCategory={(cat) => {
+            setSelectedPlano(null);
+            setSelectedCategory(cat);
+          }}
           planCount={planos.length}
         />
 
         {/* Dynamic Viewport */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto min-w-0">
           
-          {/* TAB 1: POPs de Remoção por Plano */}
-          {activeTab === 'planos' && (
-            <div className="space-y-6">
-              
-              {/* Clean Header Bar */}
-              <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-                    Remoções / Convênio
-                  </h2>
-                  <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-                    Consulte códigos TUSS, portais, regras de autorização e ambulâncias credenciadas.
-                  </p>
-                </div>
+          {/* SE UM PLANO ESTIVER SELECIONADO: PÁGINA COMPLETA, ESPAÇOSA E ORGANIZADA */}
+          {selectedPlano ? (
+            <PlanoDetalhePagina
+              plano={selectedPlano}
+              onVoltar={() => setSelectedPlano(null)}
+              onSimular={handleSimularFromPlano}
+            />
+          ) : (
+            <>
+              {/* TAB 1: POPs de Remoção por Plano */}
+              {activeTab === 'planos' && (
+                <div className="space-y-6">
+                  
+                  {/* Clean Header Bar */}
+                  <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex items-center gap-3.5">
+                      <div className="w-12 h-12 rounded-2xl bg-[#EBF5F5] text-[#1D787A] border border-[#A9D2D1] flex items-center justify-center flex-shrink-0 shadow-2xs">
+                        <Truck className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+                          <span>Remoções / Convênio</span>
+                        </h2>
+                        <p className="text-xs sm:text-sm text-slate-500 mt-0.5 font-medium">
+                          Consulte códigos TUSS, portais, regras de autorização e ambulâncias credenciadas.
+                        </p>
+                      </div>
+                    </div>
 
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setActiveTab('simulador')}
-                    className="px-4 py-2.5 rounded-full bg-[#9E1B4F] hover:bg-[#82133F] text-white text-xs font-bold transition-all flex items-center gap-2 shadow-xs whitespace-nowrap"
-                  >
-                    <Sparkles className="w-3.5 h-3.5" />
-                    <span>Assistente de Remoção</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Category Filter Pills on Mobile/Tablet */}
-              <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none lg:hidden">
-                {[
-                  { id: 'todos', label: 'Todos os Planos' },
-                  { id: 'privado', label: 'Privados' },
-                  { id: 'autogestao', label: 'Autogestões' },
-                  { id: 'militar_publico', label: 'Militares / Públicos' },
-                  { id: 'estadual_municipal', label: 'Estaduais / SERVIR' }
-                ].map(cat => (
-                  <button
-                    key={cat.id}
-                    onClick={() => setSelectedCategory(cat.id)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
-                      selectedCategory === cat.id
-                        ? 'bg-[#1D787A] text-white shadow-2xs'
-                        : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
-                    }`}
-                  >
-                    {cat.label}
-                  </button>
-                ))}
-              </div>
-
-              {/* Status counter */}
-              <div className="flex items-center justify-between text-xs text-slate-500 font-semibold px-1">
-                <span>
-                  Exibindo <strong>{filteredPlanos.length}</strong> de {planos.length} planos de saúde
-                </span>
-                {searchTerm && (
-                  <button 
-                    onClick={() => setSearchTerm('')} 
-                    className="text-[#9E1B4F] hover:underline font-bold"
-                  >
-                    Limpar pesquisa "{searchTerm}"
-                  </button>
-                )}
-              </div>
-
-              {/* Plans Grid */}
-              {filteredPlanos.length === 0 ? (
-                <div className="bg-white rounded-3xl border border-dashed border-slate-300 p-12 text-center space-y-3">
-                  <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
-                    <Search className="w-6 h-6" />
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setActiveTab('simulador')}
+                        className="px-5 py-2.5 rounded-full bg-[#9E1B4F] hover:bg-[#82133F] text-white text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-xs whitespace-nowrap cursor-pointer"
+                      >
+                        <Sparkles className="w-4 h-4 flex-shrink-0" />
+                        <span>Assistente de Remoção</span>
+                      </button>
+                    </div>
                   </div>
-                  <h3 className="text-base font-extrabold text-slate-900">Nenhum convênio encontrado</h3>
-                  <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                    Não encontramos resultados para a pesquisa "{searchTerm}". Tente pesquisar por código TUSS, sigla ou nome da operadora.
-                  </p>
-                  <button
-                    onClick={() => { setSearchTerm(''); setSelectedCategory('todos'); }}
-                    className="px-5 py-2.5 rounded-full text-xs font-bold bg-[#9E1B4F] text-white hover:bg-[#82133F]"
-                  >
-                    Ver Todos os Convênios
-                  </button>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                  {filteredPlanos.map(plano => (
-                    <PlanoCard
-                      key={plano.id}
-                      plano={plano}
-                      onSelect={(p) => setSelectedPlano(p)}
-                    />
-                  ))}
+
+                  {/* Category Filter Pills on Mobile/Tablet */}
+                  <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none lg:hidden">
+                    {[
+                      { id: 'todos', label: 'Todos os Planos' },
+                      { id: 'privado', label: 'Privados' },
+                      { id: 'autogestao', label: 'Autogestões' },
+                      { id: 'militar_publico', label: 'Militares / Públicos' },
+                      { id: 'estadual_municipal', label: 'Estaduais / SERVIR' }
+                    ].map(cat => (
+                      <button
+                        key={cat.id}
+                        onClick={() => setSelectedCategory(cat.id)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
+                          selectedCategory === cat.id
+                            ? 'bg-[#1D787A] text-white shadow-2xs'
+                            : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                        }`}
+                      >
+                        {cat.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Status counter */}
+                  <div className="flex items-center justify-between text-xs text-slate-500 font-semibold px-1">
+                    <span>
+                      Exibindo <strong>{filteredPlanos.length}</strong> de {planos.length} planos de saúde
+                    </span>
+                    {searchTerm && (
+                      <button 
+                        onClick={() => setSearchTerm('')} 
+                        className="text-[#9E1B4F] hover:underline font-bold"
+                      >
+                        Limpar pesquisa "{searchTerm}"
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Plans Grid */}
+                  {filteredPlanos.length === 0 ? (
+                    <div className="bg-white rounded-3xl border border-dashed border-slate-300 p-12 text-center space-y-3">
+                      <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
+                        <Search className="w-6 h-6" />
+                      </div>
+                      <h3 className="text-base font-extrabold text-slate-900">Nenhum convênio encontrado</h3>
+                      <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                        Não encontramos resultados para a pesquisa "{searchTerm}". Tente pesquisar por código TUSS, sigla ou nome da operadora.
+                      </p>
+                      <button
+                        onClick={() => { setSearchTerm(''); setSelectedCategory('todos'); }}
+                        className="px-5 py-2.5 rounded-full text-xs font-bold bg-[#9E1B4F] text-white hover:bg-[#82133F]"
+                      >
+                        Ver Todos os Convênios
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                      {filteredPlanos.map(plano => (
+                        <PlanoCard
+                          key={plano.id}
+                          plano={plano}
+                          onSelect={(p) => {
+                            setSelectedPlano(p);
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }}
+                        />
+                      ))}
+                    </div>
+                  )}
+
                 </div>
               )}
 
-            </div>
-          )}
+              {/* TAB 2: Assistente / Simulador Inteligente */}
+              {activeTab === 'simulador' && (
+                <SimuladorRemocao
+                  planos={planos}
+                  initialPlanoId={simulationPlanoId}
+                  onOpenPlanDetail={(p) => {
+                    setSelectedPlano(p);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                />
+              )}
 
-          {/* TAB 2: Assistente / Simulador Inteligente */}
-          {activeTab === 'simulador' && (
-            <SimuladorRemocao
-              planos={planos}
-              initialPlanoId={simulationPlanoId}
-              onOpenPlanDetail={(p) => setSelectedPlano(p)}
-            />
-          )}
+              {/* TAB 3: Gerador de Ficha de Transporte / Impressão */}
+              {activeTab === 'ficha' && (
+                <GeradorFichaRemocao planos={planos} initialPlanoId={fichaPlanoId} />
+              )}
 
-          {/* TAB 3: Gerador de Ficha de Transporte / Impressão */}
-          {activeTab === 'ficha' && (
-            <GeradorFichaRemocao planos={planos} initialPlanoId={fichaPlanoId} />
-          )}
+              {/* TAB 4: Empresas de Ambulância */}
+              {activeTab === 'empresas' && (
+                <EmpresasRemocao />
+              )}
 
-          {/* TAB 4: Empresas de Ambulância */}
-          {activeTab === 'empresas' && (
-            <EmpresasRemocao />
-          )}
-
-          {/* TAB 5: Ramais do Hospital */}
-          {activeTab === 'ramais' && (
-            <RamaisContatos />
+              {/* TAB 5: Ramais do Hospital */}
+              {activeTab === 'ramais' && (
+                <RamaisContatos />
+              )}
+            </>
           )}
 
         </main>
       </div>
-
-      {/* Detail Modal for Selected Plan */}
-      <PlanoDetailModal
-        plano={selectedPlano}
-        onClose={() => setSelectedPlano(null)}
-        onSimular={handleSimularFromPlano}
-      />
 
       {/* Master Modal */}
       <MasterModal
