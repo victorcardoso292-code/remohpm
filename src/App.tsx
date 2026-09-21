@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { MasterProvider, useMaster } from './context/MasterContext';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
@@ -9,6 +9,7 @@ import { GeradorFichaRemocao } from './components/GeradorFichaRemocao';
 import { EmpresasRemocao } from './components/EmpresasRemocao';
 import { RamaisContatos } from './components/RamaisContatos';
 import { MasterModal } from './components/MasterModal';
+import { LoginScreen } from './components/LoginScreen';
 import { PlanoRemocao } from './types/remocao';
 import { 
   Building2, 
@@ -29,6 +30,14 @@ import {
 
 function MainApp() {
   const { planos } = useMaster();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    try {
+      return Boolean(localStorage.getItem('hpm_auth_token'));
+    } catch {
+      return false;
+    }
+  });
+
   const [activeTab, setActiveTab] = useState<string>('planos');
   const [selectedCategory, setSelectedCategory] = useState<string>('todos');
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -38,7 +47,16 @@ function MainApp() {
   const [simulationPlanoId, setSimulationPlanoId] = useState<string>('servir');
   const [fichaPlanoId, setFichaPlanoId] = useState<string>('bradesco');
 
-  // Filtered plans list
+  const handleLogout = () => {
+    try {
+      localStorage.removeItem('hpm_auth_token');
+    } catch (e) {
+      console.error(e);
+    }
+    setIsAuthenticated(false);
+  };
+
+  // Filtered plans list (Declarado antes de qualquer retorno condicional para cumprir as regras do React)
   const filteredPlanos = useMemo(() => {
     return planos.filter(p => {
       const term = searchTerm.toLowerCase().trim();
@@ -63,6 +81,11 @@ function MainApp() {
     setActiveTab('simulador');
   };
 
+  // Se não estiver autenticado, exibe a tela de login obrigatória
+  if (!isAuthenticated) {
+    return <LoginScreen onLoginSuccess={() => setIsAuthenticated(true)} />;
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-800 antialiased selection:bg-teal-600 selection:text-white">
       
@@ -72,6 +95,7 @@ function MainApp() {
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
         activeTab={activeTab}
+        onLogout={handleLogout}
       />
 
       {/* Main Content Area */}

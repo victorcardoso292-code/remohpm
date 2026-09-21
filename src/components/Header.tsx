@@ -7,7 +7,8 @@ import {
   Search,
   CheckCircle2,
   PhoneCall,
-  Sparkles
+  Sparkles,
+  LogOut
 } from 'lucide-react';
 import { useMaster } from '../context/MasterContext';
 
@@ -16,12 +17,14 @@ interface HeaderProps {
   searchTerm: string;
   onSearchChange: (val: string) => void;
   activeTab: string;
+  onLogout?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({ 
   onOpenMaster, 
   searchTerm, 
   onSearchChange,
+  onLogout
 }) => {
   const { isMaster } = useMaster();
   const [time, setTime] = React.useState(new Date());
@@ -125,6 +128,18 @@ export const Header: React.FC<HeaderProps> = ({
               </>
             )}
           </button>
+
+          {/* Sair / Logout button */}
+          {onLogout && (
+            <button
+              onClick={onLogout}
+              title="Encerrar sessão no sistema"
+              className="p-2 sm:px-3 sm:py-2 rounded-full text-xs font-bold text-slate-500 hover:text-rose-700 hover:bg-rose-50 border border-slate-200 transition-all flex items-center gap-1.5"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Sair</span>
+            </button>
+          )}
         </div>
 
       </div>
