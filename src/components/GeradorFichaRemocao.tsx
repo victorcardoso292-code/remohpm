@@ -241,6 +241,8 @@ export const GeradorFichaRemocao: React.FC<GeradorFichaRemocaoProps> = ({
   const [isPrinting, setIsPrinting] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [printFeedback, setPrintFeedback] = useState<string | null>(null);
+  const [showPrintModal, setShowPrintModal] = useState(false);
+  const [previewPdfBlobUrl, setPreviewPdfBlobUrl] = useState<string | null>(null);
 
   // Gerador Vetorial Nativo Direto jsPDF (2 Páginas A4 - Frente e Verso)
   const generateFichaFiles = (formData: FormularioRemocaoState) => {
@@ -617,71 +619,41 @@ export const GeradorFichaRemocao: React.FC<GeradorFichaRemocaoProps> = ({
     }
   };
 
-  // Impressão oficial: GERA O ARQUIVO PDF (2 páginas completas), salva o arquivo para impressão e dispara a impressão
-  const handlePrint = async () => {
+  // Impressão oficial: Abre a tela de pré-visualização completa do documento A4 e permite imprimir diretamente
+  const handlePrint = () => {
     setIsPrinting(true);
-    setPrintFeedback('Gerando arquivo para impressão...');
+    setPrintFeedback('Abrindo tela de impressão e pré-visualização...');
 
     try {
-      // 1. Gera o arquivo PDF oficial com 2 páginas fiéis ao modelo
-      const { pdf, filename, blobUrl } = generateFichaFiles(form);
+      // 1. Gera o BlobURL vetorial do documento (sem disparar download de arquivo)
+      const { blobUrl } = generateFichaFiles(form);
+      setPreviewPdfBlobUrl(blobUrl);
 
-      // 2. Salva e baixa o arquivo gerado imediatamente para o dispositivo
-      pdf.save(filename);
-      setPrintFeedback(`Arquivo gerado com sucesso: ${filename}`);
+      // 2. Abre a modal de pré-visualização para o usuário ver o documento completo
+      setShowPrintModal(true);
 
-      // 3. Garante que a aba de visualização A4 esteja ativa
+      // 3. Garante que a aba de visualização A4 também esteja pronta
       setActiveTab('visualizacao');
 
-      // 4. Cria iframe oculto com o arquivo PDF gerado para acionar o diálogo de impressão
-      try {
-        const oldIframe = document.getElementById('pdf-print-sandbox');
-        if (oldIframe) oldIframe.remove();
-
-        const printIframe = document.createElement('iframe');
-        printIframe.id = 'pdf-print-sandbox';
-        printIframe.style.position = 'fixed';
-        printIframe.style.right = '0';
-        printIframe.style.bottom = '0';
-        printIframe.style.width = '0';
-        printIframe.style.height = '0';
-        printIframe.style.border = '0';
-        printIframe.src = blobUrl;
-        document.body.appendChild(printIframe);
-
-        printIframe.onload = () => {
-          setTimeout(() => {
-            try {
-              printIframe.contentWindow?.focus();
-              printIframe.contentWindow?.print();
-            } catch (errIframe) {
-              console.warn('Impressão em iframe restrita pelo navegador:', errIframe);
-            }
-          }, 350);
-        };
-      } catch (e) {
-        console.warn('Falha no iframe de impressão:', e);
-      }
-
-      // 5. Fallback adicional de impressão nativa da janela
+      // 4. Aciona a janela nativa de impressão diretamente no navegador
       setTimeout(() => {
         try {
           window.print();
         } catch (e) {
-          console.warn('window.print() indisponível:', e);
+          console.warn('Disparo direto de window.print() bloqueado:', e);
         }
-      }, 500);
+      }, 350);
 
     } catch (err) {
-      console.error('Falha ao gerar o arquivo de impressão:', err);
-      setPrintFeedback('Erro ao gerar arquivo. Tente novamente.');
+      console.error('Falha ao gerar pré-visualização de impressão:', err);
+      setPrintFeedback('Erro ao preparar pré-visualização. Tente novamente.');
     } finally {
       setTimeout(() => {
         setIsPrinting(false);
-      }, 700);
+      }, 500);
       setTimeout(() => {
         setPrintFeedback(null);
-      }, 4500);
+      }, 3500);
     }
   };
 
@@ -789,10 +761,10 @@ ${form.quadroClinicoJustificativa || 'Paciente estável, indicado transporte em 
               onClick={handlePrint}
               disabled={isPrinting || isDownloading}
               className="px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 disabled:bg-slate-100 shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
-              title="Gerar arquivo PDF e imprimir"
+              title="Abrir tela de pré-visualização e imprimir"
             >
               <Printer className={`w-3.5 h-3.5 ${isPrinting ? 'animate-spin text-[#1D787A]' : ''}`} />
-              <span>{isPrinting ? 'Gerando arquivo...' : 'Imprimir'}</span>
+              <span>{isPrinting ? 'Abrindo...' : 'Imprimir'}</span>
             </button>
           </div>
         </div>
@@ -1745,10 +1717,10 @@ ${form.quadroClinicoJustificativa || 'Paciente estável, indicado transporte em 
                 onClick={handlePrint}
                 disabled={isPrinting || isDownloading}
                 className="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 disabled:bg-slate-100 shadow-2xs flex items-center gap-1.5 transition-all cursor-pointer"
-                title="Gerar arquivo PDF e imprimir"
+                title="Abrir tela de pré-visualização e imprimir"
               >
                 <Printer className={`w-4 h-4 ${isPrinting ? 'animate-spin text-[#1D787A]' : ''}`} />
-                <span>{isPrinting ? 'Gerando arquivo...' : 'Imprimir'}</span>
+                <span>{isPrinting ? 'Abrindo...' : 'Imprimir'}</span>
               </button>
             </div>
           </div>
@@ -2081,6 +2053,97 @@ ${form.quadroClinicoJustificativa || 'Paciente estável, indicado transporte em 
 
           </div>
 
+        </div>
+      )}
+
+      {/* MODAL DE PRÉ-VISUALIZAÇÃO DE IMPRESSÃO */}
+      {showPrintModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/75 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 print:hidden animate-fadeIn">
+          <div className="bg-white w-full max-w-4xl h-[92vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-slate-200">
+            {/* Cabeçalho da Modal */}
+            <div className="px-5 py-3.5 bg-slate-900 text-white flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-[#1D787A] flex items-center justify-center text-white">
+                  <Printer className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                    Pré-visualização de Impressão Oficial
+                  </h3>
+                  <p className="text-[11px] text-slate-400">
+                    {form.modelo === 'servir' ? 'Modelo SERVIR • Governo do Tocantins' : 'Modelo Formulário de Solicitação de Remoção'} (2 Páginas A4)
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    window.print();
+                  }}
+                  className="px-4 py-1.5 rounded-xl text-xs font-bold bg-[#1D787A] hover:bg-[#165B5D] text-white shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
+                  title="Abrir tela de impressão do navegador"
+                >
+                  <Printer className="w-4 h-4" />
+                  <span>Imprimir Agora</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowPrintModal(false);
+                  }}
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+                  title="Fechar pré-visualização"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Conteúdo da Modal: Documento em Iframe ou Embed PDF */}
+            <div className="flex-1 bg-slate-100 p-2 sm:p-4 overflow-hidden flex flex-col">
+              {previewPdfBlobUrl ? (
+                <iframe
+                  src={`${previewPdfBlobUrl}#toolbar=1&navpanes=0&scrollbar=1`}
+                  className="w-full h-full rounded-xl border border-slate-300 shadow-inner bg-white"
+                  title="Pré-visualização do Documento para Impressão"
+                />
+              ) : (
+                <div className="flex-1 flex items-center justify-center">
+                  <Loader2 className="w-8 h-8 animate-spin text-[#1D787A]" />
+                </div>
+              )}
+            </div>
+
+            {/* Rodapé da Modal com ações */}
+            <div className="px-5 py-3 bg-white border-t border-slate-200 flex items-center justify-between gap-3 text-xs text-slate-600">
+              <span className="text-slate-500">
+                Páginas 1 e 2 formatadas no padrão A4 oficial para conferência prévia.
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowPrintModal(false)}
+                  className="px-3 py-1.5 rounded-xl border border-slate-300 font-semibold hover:bg-slate-50 text-slate-700 transition-colors cursor-pointer"
+                >
+                  Fechar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    window.print();
+                  }}
+                  className="px-4 py-1.5 rounded-xl bg-[#1D787A] hover:bg-[#165B5D] text-white font-bold shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <Printer className="w-3.5 h-3.5" />
+                  <span>Imprimir</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
         </div>
       )}
 
