@@ -185,10 +185,16 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
       </main>
 
       {/* Footer minimalista */}
-      <footer className="relative z-10 w-full py-4 px-6 text-center text-xs text-slate-500 border-t border-slate-800/80 bg-slate-950/40">
+      <footer className="relative z-10 w-full py-4 px-6 text-center text-xs text-slate-500 border-t border-slate-800/80 bg-slate-950/40 space-y-2">
         <p>
           © 2026 <strong>Medical • Kora Saúde</strong> • Hospital Palmas Medical. Acesso restrito a colaboradores autorizados.
         </p>
+        <div>
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-slate-900 border border-slate-700/80 shadow-xs text-slate-300 text-[11px]">
+            <span>Criação:</span>
+            <strong className="font-extrabold text-[#C8E4E3]">João Victor Cardoso Costa</strong>
+          </div>
+        </div>
       </footer>
     </div>
   );

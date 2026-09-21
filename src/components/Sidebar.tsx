@@ -174,8 +174,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Footer info */}
-      <div className="pt-3 border-t border-slate-100 mt-4 text-[11px] text-slate-400 text-center">
-        Central HPM • Regulação Hospitalar
+      <div className="pt-3 border-t border-slate-100 mt-4 text-[11px] text-slate-400 text-center space-y-2">
+        <p>Central HPM • Regulação Hospitalar</p>
+        <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-slate-50 border border-[#A9D2D1] shadow-2xs text-[#1D787A] text-[11px]">
+          <span>Criação:</span>
+          <strong className="font-extrabold text-[#0D6264]">João Victor Cardoso Costa</strong>
+        </div>
       </div>
     </aside>
   );

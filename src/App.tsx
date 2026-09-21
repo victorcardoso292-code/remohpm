@@ -392,13 +392,19 @@ function MainApp() {
 
           </div>
 
-          <div className="pt-6 border-t border-[#A9D2D1] flex flex-col sm:flex-row items-center justify-between text-xs text-slate-600 gap-2">
+          <div className="pt-6 border-t border-[#A9D2D1] flex flex-col sm:flex-row items-center justify-between text-xs text-slate-600 gap-3">
             <p>
               © 2026 <strong>Medical • Kora Saúde</strong> • Hospital Palmas Medical. Todos os direitos reservados.
             </p>
-            <p className="text-[11px] text-slate-500">
-              Central de Regulação Hospitalar & Protocolos TUSS
-            </p>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-[11px] text-slate-500">
+              {/* Badge pílula de autoria idêntico à imagem de referência */}
+              <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/95 border border-[#A9D2D1] shadow-2xs text-[#1D787A] text-[12px] font-medium">
+                <span>Criação:</span>
+                <strong className="font-extrabold text-[#0D6264]">João Victor Cardoso Costa</strong>
+              </div>
+              <span className="hidden sm:inline text-slate-300">•</span>
+              <span>Central de Regulação Hospitalar & Protocolos TUSS</span>
+            </div>
           </div>
 
         </div>
